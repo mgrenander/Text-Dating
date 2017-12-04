@@ -17,12 +17,12 @@ def create_folders():
         os.makedirs("Texts/NA")
 
 
-def download_book(data_api, id_date):
+def download_book(data_api, id, book_date_id):
     """Download book with data api"""
 
     # Format the line properly to work with the Data API
-    id, date = id_date.split("\t")
-    id = id.replace("+=", ":/").replace("=", "/")
+    hathi_id, date = book_date_id.split("\t")
+    hathi_id = hathi_id.replace("+=", ":/").replace("=", "/")
 
     # Find folder to save text
     folder = "Texts/"
@@ -30,19 +30,17 @@ def download_book(data_api, id_date):
         folder += "NA"
     else:
         rounded = math.floor(int(date) / 25) * 25
-        folder += str(rounded) + "-" + str(rounded+25) + "/"
+        folder += str(rounded) + "-" + str(rounded+25) + "/" + str(id)
 
     # Download book
-    ocrtext = data_api.getdocumentocr(id)
+    ocrtext = data_api.getdocumentocr(hathi_id)
 
     # Save book to folder
-    newest = 0
-    if os.listdir(folder) != []:
-        newest = max([int(f) for f in os.listdir(folder)]) + 1
-    os.makedirs(folder + str(newest))
+    if not os.path.exists(folder):
+        os.makedirs(folder)
 
     for i in range(0, len(ocrtext)):
-        filename = folder + "{}/{}.txt".format(newest, i)
+        filename = folder + "/{}.txt".format(i)
         f = open(filename, 'wb')
         f.write(ocrtext[i])
         f.close()
@@ -57,5 +55,5 @@ data_api = da.DataAPI(oauth_key, oauth_secret_key)
 
 # Download the books according to Bamman et al. (2017)
 ids = open("stratified.txt").read().split("\n")[1:2]
-for id_date in ids:
-    download_book(data_api, id_date)
+for i in range(0, len(ids)):
+    download_book(data_api, i, ids[i])
