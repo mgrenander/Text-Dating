@@ -1,3 +1,9 @@
+'''
+-NEED TO ADJUST NUMBER OF NODES/LAYER based on data input request
+-NEED TO select appropriate number of classes
+
+'''
+
 from keras.datasets import cifar10 # subroutines for fetching the CIFAR-10 dataset
 from keras.models import Model # basic class for specifying and training a neural network
 from keras.layers import Input, Convolution2D, MaxPooling2D, Dense, Dropout, Activation, Flatten
