@@ -1,3 +1,6 @@
 # Add the downloaded books to the gitignore
 Texts/
+Processed/
+Samples/
+Combined/
 .idea/
