@@ -12,10 +12,10 @@ Note also that the API relies on requests and requests-oauthlib packages. You wi
 
 https://babel.hathitrust.org/cgi/kgs/request
 
-Usage for the preprocessor is as follows:
+Usage for the downloader is as follows:
 
 ```python
-python data_preprocessor.py <access_key> <secret_key>
+python downloader.py <access_key> <secret_key>
 ```
 
 This will create the appropriate folders and download books as specified in the `stratified.txt` file.
