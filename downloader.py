@@ -10,7 +10,7 @@ from requests.exceptions import HTTPError, RequestException
 def create_folders(base):
     """Creates folders for the texts.
     Each folder is in the format YYYY-XXXX, where XXXX is YYYY+25 years"""
-    for i in range(1750, 1925, 25):
+    for i in range(1650, 1925, 25):
         foldername = base + "/{}-{}".format(i, i + 25)
         if not os.path.exists(foldername):
             os.makedirs(foldername)
@@ -82,11 +82,12 @@ def download_book(data_api, id, book_date_id):
                 # Note there are lots of issues with the HathiTrust rejecting requests after a few page downloads
                 attempts += 1
                 time.sleep(5)  # Wait a few seconds before trying again
-                if attempts <= 100:
+                if attempts <= 20:
                     print("Failed to download page " + str(i) + " with " + str(attempts) + " tries. Trying again.")
                     pass
                 else:
-                    raise HTTPError("Failed to download book " + str(id) + " at page " + str(i)) from e
+                    return
+                    # raise HTTPError("Failed to download book " + str(id) + " at page " + str(i)) from e
         f = open(filename, 'wb')
         f.write(ocrpage)
         f.close()
@@ -109,7 +110,7 @@ data_api = da.DataAPI(oauth_key, oauth_secret_key)
 # Download the books according to Bamman et al. (2017)
 ids = open("stratified.txt").read().split("\n")[1:]
 for i in range(0, len(ids)):
-    if i == 19 or i == 31:
+    if i == 19 or i == 31 or i == 50:
         continue
 
     download_book(data_api, i, ids[i])

@@ -7,6 +7,7 @@
 # from keras.layers import Input, Convolution2D, MaxPooling2D, Dense, Dropout, Activation, Flatten
 # from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
 import numpy as np
+from sample_creator import SampleCreator
 from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Input
@@ -43,22 +44,7 @@ class ToDenseSeq(Sequence):
     def on_epoch_end(self):
         pass
 
-def correct_input(vocab, sentences):
-	dic={}
-	for index,item in enumerate(vocab):
-		dic[item]=index
-	result_sentences=[]
-	for sent in sentences:
-		sentence_matrix=[]
-		for word in sent:
-			temp=[0]*len(vocab)
-			temp[dic[word]]=1
-			sentence_matrix.append(temp)
-		#matrix= np.array(sentence_matrix)
-		matrix=sentence_matrix
-		result_sentences.append(matrix)
-	#result_sentences=np.array(result_sentences)
-	return result_sentences
+
 
 # ---------------------- CNN parameters ----------------------
 vocabulary= ['I','went','to','school','yesterday','wanted','talk','you']
@@ -70,7 +56,6 @@ convolution_stride=2
 region_size=3
 convoluted_window_height=int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1
 
-pooling_units=2
 pooling_size=4/2
 #region_size_2=5
 num_weights=1000
@@ -78,9 +63,11 @@ pooling_units=100
 
 #----------------------------- reading in data ------------------------
 
+sc = SampleCreator(400)
+
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
 X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
-X_train= correct_input(vocabulary, X)
+X_train= sc.correct_input(vocabulary, X)
 y_train=[0,1,1,0] # y has to be a list of numbers
 y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
 
@@ -106,7 +93,7 @@ def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_voc
 	return np.ndarray for an image
 	'''
 	padded_matrix=padding(data,region_size,len_vocabulary) # still a list of lists 2D
-	print np.array(padded_matrix)
+	print (np.array(padded_matrix))
 	
 	result_matrix=[]
 	i=0
@@ -163,6 +150,6 @@ seq = ToDenseSeq(convoluted_input1[:2],y_train[:2],1)
 model.fit_generator(seq)
 
 seq = ToDenseSeq(convoluted_input1,y_train,1) # dummy test using the training same as testing
-print '------------ this is the testing result!!!------------'
+print ('------------ this is the testing result!!!------------')
 print (model.evaluate_generator(seq)) # returns [loss_function_value, accuracy]
 print ("Time spent: {}s".format(time.time() -start))
