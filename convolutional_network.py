@@ -63,9 +63,9 @@ pooling_units=100
 #----------------------------- reading in data ------------------------
 
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
-X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),['school','yesterday','wanted','talk','you']] # 2D array
+X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 X_train= correct_input(vocabulary, X)
-y_train=[0,1,1] # y has to be a list of numbers
+y_train=[0,1,1,0] # y has to be a list of numbers
 y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
 
 
@@ -109,7 +109,7 @@ def bag_of_words_conversion(X_train,region_size,convolution_stride,words_in_sent
 	result=np.array(result)
 	return result
 
-# ---------------------- actual CNN  -----------------------
+# ---------------------- CNN single -----------------------
 # options: more layers
 # more parallels
 convoluted_input1=bag_of_words_conversion(X_train,region_size,convolution_stride,words,len_vocabulary)
@@ -127,6 +127,7 @@ max_pooling1d_2 = AveragePooling1D(pool_size=pooling_size)(conv1d_2)
 
 
 flatten_1 = Flatten()(max_pooling1d_2)
+#flatten_1 = Flatten()(max_pooling1d_1)
 dense_1 = Dense(words,activation='relu')(flatten_1)
 dense_2 = Dense(num_classes, activation="softmax")(dense_1)
 
