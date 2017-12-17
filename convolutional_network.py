@@ -3,117 +3,141 @@
 -NEED TO select appropriate number of classes
 
 '''
-
-from keras.datasets import cifar10 # subroutines for fetching the CIFAR-10 dataset
-from keras.models import Model # basic class for specifying and training a neural network
-from keras.layers import Input, Convolution2D, MaxPooling2D, Dense, Dropout, Activation, Flatten
-from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
+# from keras.models import Model # basic class for specifying and training a neural network
+# from keras.layers import Input, Convolution2D, MaxPooling2D, Dense, Dropout, Activation, Flatten
+# from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
 import numpy as np
+from keras.utils import to_categorical
+
+from keras.models import Sequential
+from keras.layers import Input
+from keras.layers import AveragePooling1D
+from keras.layers import Conv1D
+from keras.layers import Flatten
+from keras.layers import Dense
+from keras.layers import Concatenate
+from keras.models import Model
+from keras.utils import Sequence
+from keras.backend import temporal_padding
+import math
 import time
+import sys
+from keras.callbacks import ModelCheckpoint
+import tensorflow as tf
 
 start = time.time()
 
-print('Loading Data...')
-x = np.loadtxt("train_x.csv", delimiter=",")  # load from text
-print('Loading Labels...')
-y = np.loadtxt("train_y.csv", delimiter=",")
-print('Loading Test Set...')
-test = np.loadtxt("test_x.csv", delimiter=",")
+def correct_input(vocab, sentences):
+	dic={}
+	for index,item in enumerate(vocab):
+		dic[item]=index
+	result_sentences=[]
+	for sent in sentences:
+		sentence_matrix=[]
+		for word in sent:
+			temp=[0]*len(vocab)
+			temp[dic[word]]=1
+			sentence_matrix.append(temp)
+		#matrix= np.array(sentence_matrix)
+		matrix=sentence_matrix
+		result_sentences.append(matrix)
+	#result_sentences=np.array(result_sentences)
+	return result_sentences
+
+# ---------------------- CNN parameters ----------------------
+vocabulary= ['I','went','to','school','yesterday','wanted','talk','you']
+
+num_classes=2
+len_vocabulary=len(vocabulary)
+words=5
+convolution_stride=2
+region_size=3
+convoluted_window_height=int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1
+
+pooling_units=2
+pooling_size=4/2
+#region_size_2=5
+num_weights=1000
+pooling_units=100
+
+#----------------------------- reading in data ------------------------
+
+#X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
+X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),['school','yesterday','wanted','talk','you']] # 2D array
+X_train= correct_input(vocabulary, X)
+y_train=[0,1,1] # y has to be a list of numbers
+y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
 
 
-threshhold = 230
-x[x<threshhold] = 0
-x[x>= threshhold] = 255
+# ---------------------- bag of words concatenation -----------------------
+def padding(data,region_size,vocabulary_length):
+	#result_sentences = np.ndarray(shape=(len(data)+2*(region_size-1),vocabulary),dtype=float)	
+	result_sentences=[[0]*vocabulary_length for i in range(region_size-1)]
+	result_sentences.extend(data)
+	result_sentences.extend([[0]*vocabulary_length for i in range(region_size-1)])
 
-x = x.reshape(-1, 64, 64,1)  # reshape
-# test[test<threshhold] = 0
-# test[test>=threshhold] = 255
+	# --------------------- convert to list of np arrays -----------------------------
+	final_result=[]
+	for line in result_sentences:
+		temp=np.array(line)
+		final_result.append(temp)
 
-test = test.reshape(-1, 64, 64,1)
+	return final_result
 
-cls = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,24,25,27,28,30,32,35,36,40,42,45,48,49,54,56,63,64,72,81]
+def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_vocabulary):
+	'''
+	accept: data list of list form 
+	return np.ndarray for an image
+	'''
+	padded_matrix=padding(data,region_size,len_vocabulary) # still a list of lists 2D
+	print np.array(padded_matrix)
+	
+	result_matrix=[]
+	i=0
+	while i+(region_size-1) < len(padded_matrix):
+		temp=np.sum(padded_matrix[i:i+region_size],axis=0)
+		result_matrix.append(temp)
+		i+=stride
+	result_matrix=np.array(result_matrix)
+	return np.array(result_matrix)
+
+def bag_of_words_conversion(X_train,region_size,convolution_stride,words_in_sentence,len_vocabulary):
+	result=[]
+	for sample in X_train:
+		result.append(bag_of_words_convolution_persample(sample,region_size,convolution_stride,words_in_sentence,len_vocabulary))
+
+	result=np.array(result)
+	return result
+
+# ---------------------- actual CNN  -----------------------
+# options: more layers
+# more parallels
+convoluted_input1=bag_of_words_conversion(X_train,region_size,convolution_stride,words,len_vocabulary)
 
 
-#makes the y values correspond to 1-40 (decode later)
-newY =[]
-for val in y:
-    for idx,num in enumerate(cls):
-        if val == num:
-            newY.append(idx)
+
+input_1 = Input(shape=(convoluted_window_height,len_vocabulary)) # height, width, depth
+#input_2 = Input(shape=(None,len_vocabulary)) # height, width, depth
+conv1d_1 = Conv1D(num_weights,1,activation='relu',padding='same')(input_1)
+#conv1d_2 = Conv1D(num_weights,1,activation='relu',padding='same')(input_1)
+max_pooling1d_1 = AveragePooling1D(pool_size=pooling_size)(conv1d_1)
+
+conv1d_2 = Conv1D(num_weights,1,activation='relu')(max_pooling1d_1)
+max_pooling1d_2 = AveragePooling1D(pool_size=pooling_size)(conv1d_2)
 
 
-newY = np.asarray(newY)
-y = newY.reshape(-1, 1)
+flatten_1 = Flatten()(max_pooling1d_2)
+dense_1 = Dense(words,activation='relu')(flatten_1)
+dense_2 = Dense(num_classes, activation="softmax")(dense_1)
 
-
-
-train = x[:45000]
-trainLabs = y[:45000]
-
-val = x[45000:50000]
-valLabs = y[45000:50000]
-
-# basic idea:                               https://medium.com/@ageitgey/machine-learning-is-fun-part-3-deep-learning-and-convolutional-neural-networks-f40359318721
-# old tutorial (not so relevant here) :     https://www.tensorflow.org/tutorials/layers
-# new tutorial (where this code is from):   https://cambridgespark.com/content/tutorials/convolutional-neural-networks-with-keras/index.html
-
-
-batch_size = 32     # in each iteration, we consider 32 training examples at once
-num_epochs = 200    # we iterate 200 times over the entire training set
-kernel_size = 3     # we will use 3x3 kernels throughout
-pool_size = 2       # we will use 2x2 pooling throughout
-conv_depth_1 = 32   # we will initially have 32 kernels per conv. layer...
-conv_depth_2 = 64   # ...switching to 64 after the first pooling layer
-drop_prob_1 = 0.25  # dropout after pooling with probability 0.25
-drop_prob_2 = 0.5   # dropout in the FC layer with probability 0.5
-hidden_size = 512   # the FC layer will have 512 neurons
-
-#(X_train, y_train), (X_test, y_test) = cifar10.load_data() # fetch CIFAR-10 data
-
-X_train = train
-y_train = trainLabs
-X_test = val
-y_test = valLabs
-
-print(np.shape(X_train))
-print(np.shape(y_train))
-
-num_train, height, width, depth = X_train.shape # there are 50000 training examples in CIFAR-10 
-num_test = X_test.shape[0] # there are 10000 test examples in CIFAR-10
-num_classes = np.unique(y_train).shape[0] # there are 10 image classes
-
-X_train = X_train.astype('float32') 
-X_test = X_test.astype('float32')
-X_train /= np.max(X_train) # Normalise data to [0, 1] range
-X_test /= np.max(X_test) # Normalise data to [0, 1] range
-
-Y_train = np_utils.to_categorical(y_train, num_classes) # One-hot encode the labels
-Y_test = np_utils.to_categorical(y_test, num_classes) # One-hot encode the labels
-
-inp = Input(shape=(height, width, depth)) # depth goes last in TensorFlow back-end (first in Theano)
-# Conv [32] -> Conv [32] -> Pool (with dropout on the pooling layer)
-conv_1 = Convolution2D(conv_depth_1, (kernel_size, kernel_size), padding='same', activation='relu')(inp)
-conv_2 = Convolution2D(conv_depth_1, (kernel_size, kernel_size), padding='same', activation='relu')(conv_1)
-pool_1 = MaxPooling2D(pool_size=(pool_size, pool_size))(conv_2)
-drop_1 = Dropout(drop_prob_1)(pool_1)
-# Conv [64] -> Conv [64] -> Pool (with dropout on the pooling layer)
-conv_3 = Convolution2D(conv_depth_2, (kernel_size, kernel_size), padding='same', activation='relu')(drop_1)
-conv_4 = Convolution2D(conv_depth_2, (kernel_size, kernel_size), padding='same', activation='relu')(conv_3)
-pool_2 = MaxPooling2D(pool_size=(pool_size, pool_size))(conv_4)
-drop_2 = Dropout(drop_prob_1)(pool_2)
-# Now flatten to 1D, apply FC -> ReLU (with dropout) -> softmax
-flat = Flatten()(drop_2)
-hidden = Dense(hidden_size, activation='relu')(flat)
-drop_3 = Dropout(drop_prob_2)(hidden)
-out = Dense(num_classes, activation='softmax')(drop_3)
-
-model = Model(inputs=inp, outputs=out) # To define a model, just specify its input and output layers
+model = Model(inputs=input_1, outputs=dense_2)
 
 model.compile(loss='categorical_crossentropy', # using the cross-entropy loss function
               optimizer='adam', # using the Adam optimiser
               metrics=['accuracy']) # reporting the accuracy
 
-model.fit(X_train, Y_train,                # Train the model using the training set...
-          batch_size=batch_size, epochs=num_epochs,
-          verbose=1, validation_split=0.1) # ...holding out 10% of the data for validation
-model.evaluate(X_test, Y_test, verbose=1)  # Evaluate the trained model on the test set!
+print(model.summary())
+
+model.fit(x=convoluted_input1, y=y_train)
+
+print ("Time spent: {}s".format(time.time() -start))
