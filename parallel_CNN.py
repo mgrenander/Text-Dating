@@ -8,6 +8,7 @@
 # from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
 import numpy as np
 from keras.utils import to_categorical
+
 from keras.models import Sequential
 from keras.layers import Input
 from keras.layers import AveragePooling1D
@@ -17,31 +18,14 @@ from keras.layers import Dense
 from keras.layers import Concatenate
 from keras.models import Model
 from keras.utils import Sequence
+from keras.backend import temporal_padding
 import math
 import time
 import sys
+from keras.callbacks import ModelCheckpoint
 import tensorflow as tf
 
 start = time.time()
-
-class ToDenseSeq(Sequence):
-
-    def __init__(self, x_set, y_set, batch_size):
-        self.x, self.y = x_set, y_set
-        self.batch_size = batch_size
-
-    def __len__(self):
-        return math.ceil(len(self.x) / self.batch_size)
-
-    def __getitem__(self, idx):
-
-        batch_x = self.x[idx * self.batch_size:(idx + 1) * self.batch_size]
-        batch_y = self.y[idx * self.batch_size:(idx + 1) * self.batch_size]
-
-        return batch_x,np.array(batch_y)
-
-    def on_epoch_end(self):
-        pass
 
 def correct_input(vocab, sentences):
 	dic={}
@@ -66,22 +50,30 @@ vocabulary= ['I','went','to','school','yesterday','wanted','talk','you']
 num_classes=2
 len_vocabulary=len(vocabulary)
 words=5
-convolution_stride=2
-region_size=3
-convoluted_window_height=int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1
+
+convolution_stride_1=2
+region_size_1=3
+convoluted_window_height_1=int(((words+(2*(region_size_1-1)))-region_size_1)/(convolution_stride_1))+1
+
+convolution_stride_2=2
+region_size_2=4
+convoluted_window_height_2=int(((words+(2*(region_size_2-1)))-region_size_2)/(convolution_stride_2))+1
 
 pooling_units=2
-pooling_size=4/2
+pooling_size_1=convoluted_window_height_1/pooling_units
+
+pooling_size_2=convoluted_window_height_2/pooling_units
 #region_size_2=5
-num_weights=1000
-pooling_units=100
+
+num_weights=1
+
 
 #----------------------------- reading in data ------------------------
 
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
 X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 X_train= correct_input(vocabulary, X)
-y_train=[0,1,1,0] # y has to be a list of numbers
+y_train=[0,1,1,1] # y has to be a list of numbers
 y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
 
 
@@ -128,41 +120,37 @@ def bag_of_words_conversion(X_train,region_size,convolution_stride,words_in_sent
 # ---------------------- CNN single -----------------------
 # options: more layers
 # more parallels
-convoluted_input1=bag_of_words_conversion(X_train,region_size,convolution_stride,words,len_vocabulary)
+convoluted_input1=bag_of_words_conversion(X_train,region_size_1,convolution_stride_1,words,len_vocabulary)
+convoluted_input2=bag_of_words_conversion(X_train,region_size_2,convolution_stride_2,words,len_vocabulary)
 
 
 
-input_1 = Input(shape=(convoluted_window_height,len_vocabulary)) # height, width, depth
-#input_2 = Input(shape=(None,len_vocabulary)) # height, width, depth
+input_1 = Input(shape=(convoluted_window_height_1,len_vocabulary)) # height, width, depth
+input_2 = Input(shape=(convoluted_window_height_2,len_vocabulary)) # height, width, depth
 conv1d_1 = Conv1D(num_weights,1,activation='relu',padding='same')(input_1)
+conv1d_2 = Conv1D(num_weights,1,activation='relu',padding='same')(input_2)
 #conv1d_2 = Conv1D(num_weights,1,activation='relu',padding='same')(input_1)
-max_pooling1d_1 = AveragePooling1D(pool_size=pooling_size)(conv1d_1)
+max_pooling1d_1 = AveragePooling1D(pool_size=pooling_size_1)(conv1d_1)
+max_pooling1d_2 = AveragePooling1D(pool_size=pooling_size_2)(conv1d_2)
 
-conv1d_2 = Conv1D(num_weights,1,activation='relu')(max_pooling1d_1)
-max_pooling1d_2 = AveragePooling1D(pool_size=pooling_size)(conv1d_2)
+merge_1 = Concatenate(axis=1)([max_pooling1d_1,max_pooling1d_2])
 
 
-flatten_1 = Flatten()(max_pooling1d_2)
-#flatten_1 = Flatten()(max_pooling1d_1)
+# conv1d_2 = Conv1D(num_weights,1,activation='relu')(max_pooling1d_1)
+# max_pooling1d_2 = AveragePooling1D(pool_size=pooling_size)(conv1d_2)
+
+flatten_1 = Flatten()(merge_1)
 dense_1 = Dense(words,activation='relu')(flatten_1)
 dense_2 = Dense(num_classes, activation="softmax")(dense_1)
 
-model = Model(inputs=input_1, outputs=dense_2)
+model = Model(inputs=[input_1,input_2], outputs=dense_2)
 
 model.compile(loss='categorical_crossentropy', # using the cross-entropy loss function
               optimizer='adam', # using the Adam optimiser
               metrics=['accuracy']) # reporting the accuracy
 
 print(model.summary())
-'''
-# ---------- all together in one go ... it works ---------------
-model.fit(x=convoluted_input1, y=y_train)
-'''
-# ----------------- try to pass by batch -----------------------
-seq = ToDenseSeq(convoluted_input1[:2],y_train[:2],1)
-model.fit_generator(seq)
 
-seq = ToDenseSeq(convoluted_input1,y_train,1) # dummy test using the training same as testing
-print '------------ this is the testing result!!!------------'
-print (model.evaluate_generator(seq)) # returns [loss_function_value, accuracy]
+model.fit(x=[convoluted_input1,convoluted_input1], y=y_train)
+
 print ("Time spent: {}s".format(time.time() -start))
