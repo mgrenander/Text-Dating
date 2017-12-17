@@ -8,7 +8,6 @@
 # from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
 import numpy as np
 from keras.utils import to_categorical
-
 from keras.models import Sequential
 from keras.layers import Input
 from keras.layers import AveragePooling1D
@@ -18,14 +17,31 @@ from keras.layers import Dense
 from keras.layers import Concatenate
 from keras.models import Model
 from keras.utils import Sequence
-from keras.backend import temporal_padding
 import math
 import time
 import sys
-from keras.callbacks import ModelCheckpoint
 import tensorflow as tf
 
 start = time.time()
+
+class ToDenseSeq(Sequence):
+
+    def __init__(self, x_set, y_set, batch_size):
+        self.x, self.y = x_set, y_set
+        self.batch_size = batch_size
+
+    def __len__(self):
+        return math.ceil(len(self.x) / self.batch_size)
+
+    def __getitem__(self, idx):
+
+        batch_x = self.x[idx * self.batch_size:(idx + 1) * self.batch_size]
+        batch_y = self.y[idx * self.batch_size:(idx + 1) * self.batch_size]
+
+        return batch_x,np.array(batch_y)
+
+    def on_epoch_end(self):
+        pass
 
 def correct_input(vocab, sentences):
 	dic={}
@@ -138,7 +154,15 @@ model.compile(loss='categorical_crossentropy', # using the cross-entropy loss fu
               metrics=['accuracy']) # reporting the accuracy
 
 print(model.summary())
-
+'''
+# ---------- all together in one go ... it works ---------------
 model.fit(x=convoluted_input1, y=y_train)
+'''
+# ----------------- try to pass by batch -----------------------
+seq = ToDenseSeq(convoluted_input1[:2],y_train[:2],1)
+model.fit_generator(seq)
 
+seq = ToDenseSeq(convoluted_input1,y_train,1) # dummy test using the training same as testing
+print '------------ this is the testing result!!!------------'
+print (model.evaluate_generator(seq)) # returns [loss_function_value, accuracy]
 print ("Time spent: {}s".format(time.time() -start))
