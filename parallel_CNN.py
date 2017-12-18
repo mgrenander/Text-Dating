@@ -8,7 +8,6 @@
 # from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
 import numpy as np
 from keras.utils import to_categorical
-
 from keras.models import Sequential
 from keras.layers import Input
 from keras.layers import AveragePooling1D
@@ -47,7 +46,7 @@ def correct_input(vocab, sentences):
 # ---------------------- CNN parameters ----------------------
 vocabulary= ['I','went','to','school','yesterday','wanted','talk','you']
 
-num_classes=2
+num_classes=3
 len_vocabulary=len(vocabulary)
 words=5
 
@@ -73,8 +72,11 @@ num_weights=1
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
 X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 X_train= correct_input(vocabulary, X)
-y_train=[0,1,1,1] # y has to be a list of numbers
+
+y_train=[2] # y has to be a list of numbers
 y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
+print y_train
+sys.exit()
 
 
 # ---------------------- bag of words concatenation -----------------------

@@ -36,20 +36,28 @@ class SampleCreator:
 
     def get_samples(self, category):
         # Load data from category
-        with open("Combined/" + str(self.mapping[category]) + "/document.txt", encoding='utf8') as f:
-            all_words = data_preprocessor.tokenize(f.read())
+        #with open("Combined/" + str(self.mapping[category]) + "/document.txt", encoding='utf8') as f:
+        with open("Combined/" + str(self.mapping[category]) + "/document.txt", 'r') as f:
+            #all_words = data_preprocessor.tokenize(f.read())
+            all_words = data_preprocessor.tokenize(f.read().decode("UTF-8"))
             samples = []
             for i in range(0, len(all_words), self.sample_size):
                 pre_sample = all_words[i:i+self.sample_size]
                 samples.append(self.correct_input(pre_sample))
 
     def get_label(self, category):
+        '''
+        input category: a single int 
+        '''
         # TODO: get Seara's help for this part
-        encoding_list = []
-        for i in range(0,8):
-            if i == category:
-                encoding_list.append(1)
-            else:
-                encoding_list.append(0)
+        # encoding_list = []
+        # for i in range(0,8):
+        #     if i == category:
+        #         encoding_list.append(1)
+        #     else:
+        #         encoding_list.append(0)
+        #return encoding_list
+        return to_categorical([category],8)
 
-        return to_categorical(encoding_list)
+
+
