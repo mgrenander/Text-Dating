@@ -55,22 +55,26 @@ convolution_stride=2
 region_size=3
 convoluted_window_height=int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1
 
-pooling_size=4/2
-#region_size_2=5
 num_weights=1000
 pooling_units=100
+pooling_size=((int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1 )/pooling_units) +1
 
 #----------------------------- reading in data ------------------------
 
-sc = SampleCreator(400)
+sc = SampleCreator(3) # was 100
 
-# Category 7
-samples7 = sc.get_samples(6)
-label7 = sc.get_label(6)
+# dummy Category 8
+samples8 = sc.get_samples(8)
+label8 = sc.get_label(8)
 
-print samples7
-print label7
+X_train=samples8
+y_train=label8
+
+#print samples8[0].shape
+print samples8[0] # outer: a list of 21 items
 sys.exit()
+print label8[0]
+
 
 
 
@@ -79,6 +83,8 @@ sys.exit()
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
 # X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 # X_train= sc.correct_input(vocabulary, X)
+# print type(X_train[0])
+# sys.exit()
 # y_train=[0,1,1,0] # y has to be a list of numbers
 # y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
 
@@ -95,7 +101,6 @@ def padding(data,region_size,vocabulary_length):
 	for line in result_sentences:
 		temp=np.array(line)
 		final_result.append(temp)
-
 	return final_result
 
 def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_vocabulary):
@@ -104,12 +109,18 @@ def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_voc
 	return np.ndarray for an image
 	'''
 	padded_matrix=padding(data,region_size,len_vocabulary) # still a list of lists 2D
-	print (np.array(padded_matrix))
+	#print (np.array(padded_matrix))
 	
 	result_matrix=[]
 	i=0
 	while i+(region_size-1) < len(padded_matrix):
-		temp=np.sum(padded_matrix[i:i+region_size],axis=0)
+		try:temp=np.sum(padded_matrix[i:i+region_size],axis=0)
+		except:
+			print '--------------------'
+			for j in range(i,i+region_size):
+				print padded_matrix[j]
+			sys.exit('error!!')
+
 		result_matrix.append(temp)
 		i+=stride
 	result_matrix=np.array(result_matrix)
@@ -152,10 +163,10 @@ model.compile(loss='categorical_crossentropy', # using the cross-entropy loss fu
               metrics=['accuracy']) # reporting the accuracy
 
 print(model.summary())
-'''
+
 # ---------- all together in one go ... it works ---------------
 model.fit(x=convoluted_input1, y=y_train)
-'''
+
 # ----------------- try to pass by batch -----------------------
 # seq = ToDenseSeq(convoluted_input1[:2],y_train[:2],1)
 # model.fit_generator(seq)

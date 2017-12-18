@@ -16,22 +16,26 @@ class SampleCreator:
             end = (i+1)*25 + 1725
             self.mapping.append("{}-{}".format(start,end))
 
+        self.mapping.append("1650-1675")
+        # So now mapping[8] = "1650..."
+
     def correct_input(self, sentences):
         dic = {}
         for index, item in enumerate(self.vocabulary):
             dic[item] = index
-        result_sentences = []
         for sent in sentences:
             sentence_matrix = []
             for word in sent:
                 temp = [0] * len(self.vocabulary)
-                temp[dic[word]] = 1
+                try:
+                    temp[dic[word]] = 1
+                except KeyError:
+                    pass
                 sentence_matrix.append(temp)
             # matrix= np.array(sentence_matrix)
-            matrix = sentence_matrix
-            result_sentences.append(matrix)
+            sentence_matrix
         # result_sentences=np.array(result_sentences)
-        return result_sentences
+        return sentence_matrix
 
 
     def get_samples(self, category):
@@ -44,7 +48,7 @@ class SampleCreator:
             for i in range(0, len(all_words), self.sample_size):
                 pre_sample = all_words[i:i+self.sample_size]
                 samples.append(self.correct_input(pre_sample))
-
+        return samples
     def get_label(self, category):
         '''
         input category: a single int 
@@ -57,7 +61,7 @@ class SampleCreator:
         #     else:
         #         encoding_list.append(0)
         #return encoding_list
-        return to_categorical([category],8)
+        return to_categorical([category],9)
 
 
 
