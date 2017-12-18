@@ -3,6 +3,7 @@ import data_preprocessor
 from keras.utils import to_categorical
 import numpy as np
 import pickle
+import os
 
 class SampleCreator:
     vocabulary = dict()
@@ -93,6 +94,11 @@ if __name__ == "__main__":
     # TESTING
     test_sample = sc.get_samples(8)
     test_labels = np.array(sc.get_label(8))
+
+    ##### PICKLING
+    # Create pickle folder
+    if not os.path.exists("Pickles"):
+        os.makedirs("Pickles")
 
     # Pickle only the test sample
     pickle_test = open("Pickles/test_pickle.pickle", "wb")
