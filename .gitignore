@@ -4,3 +4,5 @@ Processed/
 Samples/
 Combined/
 .idea/
+.DS_store
+*.pyc

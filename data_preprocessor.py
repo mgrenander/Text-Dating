@@ -86,6 +86,7 @@ def tokenize(text):
     pattern = r"[{}]".format(punc)
 
     no_punc = re.sub(pattern, "", no_dig)
+    no_punc = no_punc.decode('utf-8').lower()
     return word_tokenize(no_punc)
 
 

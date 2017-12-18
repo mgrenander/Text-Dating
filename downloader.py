@@ -42,6 +42,10 @@ def download_book(data_api, id, book_date_id):
     hathi_id, date = book_date_id.split("\t")
     hathi_id = hathi_id.replace("+=", ":/").replace("=", "/")
 
+    if int(date) < 1725 or date == "N/A":
+        print("Date is less than 1725 or NA: " + date)
+        return
+
     # Find folder to save text
     folder = "Texts/"
     if date == "N/A":
@@ -100,7 +104,6 @@ def download_book(data_api, id, book_date_id):
 create_folders("Texts")
 create_folders("Processed")
 create_folders("Combined")
-create_folders("Samples")
 
 # Create data_api instance to create connection to HathiTrust
 oauth_key = sys.argv[1]
@@ -109,7 +112,7 @@ data_api = da.DataAPI(oauth_key, oauth_secret_key)
 
 # Download the books according to Bamman et al. (2017)
 ids = open("stratified.txt").read().split("\n")[1:]
-for i in range(100, len(ids)):
+for i in range(117, len(ids)):
     # Some books cannot be downloaded this way
     if i == 19 or i == 31 or i == 50 or i == 105:
         continue
