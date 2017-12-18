@@ -2,7 +2,7 @@
 import data_preprocessor
 from keras.utils import to_categorical
 import numpy as np
-
+import pickle
 
 class SampleCreator:
     vocabulary = []
@@ -38,9 +38,6 @@ class SampleCreator:
                 pass
             sentence_matrix.append(temp)
         matrix= np.array(sentence_matrix)
-        # print matrix
-        # sys.exit()
-        # result_sentences=np.array(result_sentences)
         return matrix
 
 
@@ -67,3 +64,18 @@ class SampleCreator:
     def get_vocab_len(self):
         """Returns length of vocabulary"""
         return len(self.vocabulary)
+
+if __name__ == "__main__":
+    # Create samples and pickle data
+    sc = SampleCreator(400)
+    all_samples = []
+    all_labels = []
+    for i in range(0,7):
+        all_samples += sc.get_samples(i)
+        all_labels += sc.get_label(i)
+
+    pickle_X = open("Pickles/X_train.pickle", "wb")
+    pickle_y = open("Pickles/y_train.pickle", "wb")
+
+    pickle.dump(all_samples, pickle_X)
+    pickle.dump(all_labels, pickle_y)
