@@ -5,40 +5,43 @@ import numpy as np
 import pickle
 
 class SampleCreator:
-    vocabulary = []
+    vocabulary = dict()
     sample_size = 0
     mapping = []
     size_mapping = []
+    num_categories = 0
 
-    def __init__(self, sample_size):
-        self.vocabulary = data_preprocessor.create_vocabulary()
+    def __init__(self, sample_size, num_categories):
+        vocab_list = data_preprocessor.create_vocabulary()
         self.sample_size = sample_size
-        self.size_mapping = [0] * 8
+        self.num_categories = num_categories
+        self.size_mapping = [0] * num_categories
 
-        for i in range(0,8):
+        for i in range(0,8): # TODO: change this after done testing with 1650-1675
             start = i*25 + 1725
             end = (i+1)*25 + 1725
             self.mapping.append("{}-{}".format(start,end))
+
+        for index, item in enumerate(vocab_list):
+            self.vocabulary[item] = index
 
         self.mapping.append("1650-1675")
         # So now mapping[8] = "1650..."
 
 
-    def correct_input(self, sent):
-        dic = {}
-        for index, item in enumerate(self.vocabulary):
-            dic[item] = index
-
+    def correct_input(self, raw_sample):
+        """Given a list of words, creates an array where each entry represents the one-hot encoding of one word"""
         sentence_matrix = []
-        for word in sent:
-            temp = [0] * len(self.vocabulary)
+        for word in raw_sample:
+            word_vec = [0] * len(self.vocabulary)
             try:
-                temp[dic[word]] = 1
+                word_vec[self.vocabulary[word]] = 1
             except KeyError:
+                # Word was not found
                 pass
-            sentence_matrix.append(temp)
-        matrix= np.array(sentence_matrix)
-        return matrix
+
+            sentence_matrix.append(word_vec)
+        return sentence_matrix
 
 
     def get_samples(self, category):
@@ -58,7 +61,15 @@ class SampleCreator:
     def get_label(self, category):
         # Returns label for the samples
         num_samples = self.size_mapping[category]
-        return [to_categorical([category],8)] * num_samples
+        one_label = to_categorical(category, self.num_categories)
+
+        # labels = np.empty([num_samples, one_label.shape[0]])
+        # labels[:] = one_label
+
+        labels = []
+        for i in range(0, num_samples):
+            labels.append(one_label)
+        return labels
 
 
     def get_vocab_len(self):
@@ -67,15 +78,27 @@ class SampleCreator:
 
 if __name__ == "__main__":
     # Create samples and pickle data
-    sc = SampleCreator(400)
+    sc = SampleCreator(400, 9)
+
     all_samples = []
     all_labels = []
     for i in range(0,7):
+        print("Computing sample values at category " + str(i))
         all_samples += sc.get_samples(i)
         all_labels += sc.get_label(i)
 
-    pickle_X = open("Pickles/X_train.pickle", "wb")
-    pickle_y = open("Pickles/y_train.pickle", "wb")
+    # Convert all_labels to numpy array
+    all_labels = np.array(all_labels)
 
-    pickle.dump(all_samples, pickle_X)
-    pickle.dump(all_labels, pickle_y)
+    # TESTING
+    test_sample = sc.get_samples(8)
+    test_labels = np.array(sc.get_label(8))
+
+    # Pickle only the test sample
+    pickle_test = open("Pickles/test_pickle.pickle", "wb")
+    pickle.dump((test_sample, test_labels), pickle_test)
+
+    # Pickle all samples
+    pickle_all = open("Pickles/samples_labels.pickle", "wb")
+
+    pickle.dump((all_samples, all_labels), pickle_all)

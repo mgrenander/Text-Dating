@@ -42,8 +42,11 @@ def download_book(data_api, id, book_date_id):
     hathi_id, date = book_date_id.split("\t")
     hathi_id = hathi_id.replace("+=", ":/").replace("=", "/")
 
-    if int(date) < 1725 or date == "N/A":
-        print("Date is less than 1725 or NA: " + date)
+    if date == "N/A":
+        return
+
+    if int(date) >= 1750 or int(date) < 1725:
+        print("We only want books in 1725-1750")
         return
 
     # Find folder to save text

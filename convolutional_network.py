@@ -21,6 +21,7 @@ from keras.utils import Sequence
 import math
 import time
 import sys
+import pickle
 import tensorflow as tf
 
 start = time.time()
@@ -43,6 +44,37 @@ class ToDenseSeq(Sequence):
 
     def on_epoch_end(self):
         pass
+
+# ------------------------ Matt new ---------------------------
+# Small test sample
+pickle_in = open("Pickles/test_pickle.pickle", 'rb')
+X_train, y_train = pickle.load(pickle_in)
+# print(y_train)
+# print(X_train)
+
+# Verify types
+# print(type(X_train))
+# print(type(X_train[0]))
+# print(type(X_train[0][0]))
+#
+# print(type(y_train))
+# print(type(y_train[0]))
+
+# All samples
+pickle_all = open("Pickles/samples_labels.pickle", 'rb')
+
+X_all, y_all = pickle.load(pickle_all)
+
+# Verify types
+print(type(X_all))
+print(type(X_all[0]))
+print(type(X_all[0][0]))
+
+print(type(y_all))
+print(type(y_all[0]))
+
+sys.exit()
+
 #----------------------------- reading in data ------------------------
 words=5 # number of words per sample
 sc = SampleCreator(words) # was 100
