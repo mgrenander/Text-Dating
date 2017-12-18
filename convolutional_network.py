@@ -45,7 +45,6 @@ class ToDenseSeq(Sequence):
         pass
 
 
-
 # ---------------------- CNN parameters ----------------------
 vocabulary= ['I','went','to','school','yesterday','wanted','talk','you']
 
@@ -64,16 +63,42 @@ pooling_units=100
 #----------------------------- reading in data ------------------------
 
 sc = SampleCreator(400)
-for i in range(0,8):
-	X_train = sc.get_samples(i)
-	y_train = sc.get_label(i)
+
+# Category 7
+samples7 = sc.get_samples(6)
+label7 = sc.get_label(6)
+
+print samples7
+print label7
+sys.exit()
 
 
+
+
+# Category 7
+samples7 = sc.get_samples(6)
+label7 = sc.get_label(6)
+
+print samples7
+print label7
+sys.exit()
+
+
+
+
+# -------------------- fake testing data --------------------------------
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
+<<<<<<< HEAD
 X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 X_train= sc.correct_input(X)
 y_train=[0,1,1,0] # y has to be a list of numbers
 y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
+=======
+# X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+# X_train= sc.correct_input(vocabulary, X)
+# y_train=[0,1,1,0] # y has to be a list of numbers
+# y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
+>>>>>>> dd5bf0033e666a026d572bb348cb60db2ab24859
 
 
 # ---------------------- bag of words concatenation -----------------------
@@ -150,10 +175,10 @@ print(model.summary())
 model.fit(x=convoluted_input1, y=y_train)
 '''
 # ----------------- try to pass by batch -----------------------
-seq = ToDenseSeq(convoluted_input1[:2],y_train[:2],1)
-model.fit_generator(seq)
+# seq = ToDenseSeq(convoluted_input1[:2],y_train[:2],1)
+# model.fit_generator(seq)
 
-seq = ToDenseSeq(convoluted_input1,y_train,1) # dummy test using the training same as testing
-print ('------------ this is the testing result!!!------------')
-print (model.evaluate_generator(seq)) # returns [loss_function_value, accuracy]
-print ("Time spent: {}s".format(time.time() -start))
+# seq = ToDenseSeq(convoluted_input1,y_train,1) # dummy test using the training same as testing
+# print ('------------ this is the testing result!!!------------')
+# print (model.evaluate_generator(seq)) # returns [loss_function_value, accuracy]
+# print ("Time spent: {}s".format(time.time() -start))
