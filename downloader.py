@@ -109,8 +109,9 @@ data_api = da.DataAPI(oauth_key, oauth_secret_key)
 
 # Download the books according to Bamman et al. (2017)
 ids = open("stratified.txt").read().split("\n")[1:]
-for i in range(0, len(ids)):
-    if i == 19 or i == 31 or i == 50:
+for i in range(100, len(ids)):
+    # Some books cannot be downloaded this way
+    if i == 19 or i == 31 or i == 50 or i == 105:
         continue
 
     download_book(data_api, i, ids[i])

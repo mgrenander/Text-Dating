@@ -47,6 +47,7 @@ class SampleCreator:
         dic = {}
         for index, item in enumerate(self.vocabulary):
             dic[item] = index
+<<<<<<< HEAD
 
         sentence_matrix = []
         for word in sent:
@@ -59,6 +60,21 @@ class SampleCreator:
         matrix= np.array(sentence_matrix)
         # print matrix
         # sys.exit()
+=======
+        result_sentences = []
+        for sent in sentences:
+            sentence_matrix = []
+            for word in sent:
+                temp = [0] * len(self.vocabulary)
+                try:
+                    temp[dic[word]] = 1
+                except KeyError:
+                    pass
+                sentence_matrix.append(temp)
+            # matrix= np.array(sentence_matrix)
+            matrix = sentence_matrix
+            result_sentences.append(matrix)
+>>>>>>> f9fa848ba5a9b942093fd4a4c383648178aaf0aa
         # result_sentences=np.array(result_sentences)
         return matrix
 
@@ -74,6 +90,10 @@ class SampleCreator:
                 pre_sample = all_words[i:i+self.sample_size]
                 samples.append(self.correct_input(pre_sample))
         return samples
+<<<<<<< HEAD
+=======
+
+>>>>>>> f9fa848ba5a9b942093fd4a4c383648178aaf0aa
     def get_label(self, category):
         '''
         input category: a single int 

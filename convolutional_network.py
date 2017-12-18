@@ -133,11 +133,38 @@ print (y_train)
 #
 
 
+<<<<<<< HEAD
+=======
+# Category 7
+samples7 = sc.get_samples(6)
+label7 = sc.get_label(6)
+
+print samples7
+print label7
+sys.exit()
+
+
+
+
+# -------------------- fake testing data --------------------------------
+#X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
+<<<<<<< HEAD
+X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+X_train= sc.correct_input(X)
+y_train=[0,1,1,0] # y has to be a list of numbers
+y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
+=======
+# X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+# X_train= sc.correct_input(vocabulary, X)
+# y_train=[0,1,1,0] # y has to be a list of numbers
+# y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
+>>>>>>> dd5bf0033e666a026d572bb348cb60db2ab24859
+>>>>>>> f9fa848ba5a9b942093fd4a4c383648178aaf0aa
 
 
 # ---------------------- bag of words concatenation -----------------------
 def padding(data,region_size,vocabulary_length):
-	#result_sentences = np.ndarray(shape=(len(data)+2*(region_size-1),vocabulary),dtype=float)	
+	#result_sentences = np.ndarray(shape=(len(data)+2*(region_size-1),vocabulary),dtype=float)
 	result_sentences=[[0]*vocabulary_length for i in range(region_size-1)]
 	result_sentences.extend(data)
 	result_sentences.extend([[0]*vocabulary_length for i in range(region_size-1)])
