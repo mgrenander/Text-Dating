@@ -119,9 +119,10 @@ def create_vocabulary():
     feature_array = np.array(vectorizer.get_feature_names())
     tfidf_sorting = np.argsort(X.toarray()).flatten()[::-1]
 
-    n = 10000
+    #n = 10000
+    n=100
     top_n = feature_array[tfidf_sorting][:n]
-
+    print ("finished TFIDF computations")
     return top_n
 
 

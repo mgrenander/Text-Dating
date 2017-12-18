@@ -43,27 +43,43 @@ class ToDenseSeq(Sequence):
 
     def on_epoch_end(self):
         pass
+#----------------------------- reading in data ------------------------
+words=5 # number of words per sample
+sc = SampleCreator(words) # was 100
 
+# dummy Category 8
+samples8 = sc.get_samples(8)
+samples8=np.array(samples8)
+label8 = sc.get_label(8)
+print (type(samples8))
+print (samples8[0].shape)
+print (samples8[0])
+
+X_train=samples8[:5]
+y_train=label8
+print (len(X_train))
+print (y_train)
 
 # ---------------------- CNN parameters ----------------------
-vocabulary= ['I','went','to','school','yesterday','wanted','talk','you']
+def calculated_convoluted_window_height(region_size,convolution_stride):
+	expanded=words+(2*(region_size-1))
+	nums_windows=(expanded-(region_size-1))/convolution_stride
+	return nums_windows
 
-num_classes=2
-len_vocabulary=len(vocabulary)
-words=5
+
+#num_classes=9
 convolution_stride=2
 region_size=3
-convoluted_window_height=int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1
-
-pooling_size=4/2
-#region_size_2=5
 num_weights=1000
 pooling_units=100
+pooling_size=int((int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1 )/pooling_units) +1
 
-#----------------------------- reading in data ------------------------
+#vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
+len_vocabulary=sc.get_vocab_len()
+#len_vocabulary=len(vocabulary)
 
-sc = SampleCreator(400)
 
+<<<<<<< HEAD
 # Category 7
 samples7 = sc.get_samples(6)
 label7 = sc.get_label(6)
@@ -72,12 +88,86 @@ print(samples7)
 print(label7)
 sys.exit()
 
+=======
+
+
+# -------------------- fake testing data --------------------------------
+# def correct_input_local(vocabulary, sentences):
+# 	dic = {}
+# 	for index, item in enumerate(vocabulary):
+# 		dic[item] = index
+# 	result_sentences=[]
+# 	for sent in sentences:
+# 		sentence_matrix = []
+# 		for word in sent:
+# 			temp = [0] * len(vocabulary)
+# 			try:
+# 				temp[dic[word]] = 1
+# 			except KeyError:
+# 				pass
+# 			sentence_matrix.append(temp)
+# 		matrix= sentence_matrix
+# 		result_sentences.append(matrix)
+       
+# 	#result_sentences=np.array(result_sentences)
+# 	return result_sentences
+def correct_input_local(vocab, sentences):
+	dic={}
+	for index,item in enumerate(vocab):
+		dic[item]=index
+	result_sentences=[]
+	for sent in sentences:
+		sentence_matrix=[]
+		for word in sent:
+			temp=[0]*len(vocab)
+			try: temp[dic[word]]=1
+			except:
+				pass
+			sentence_matrix.append(temp)
+		#matrix= np.array(sentence_matrix)
+		matrix=sentence_matrix
+		result_sentences.append(matrix)
+	#result_sentences=np.array(result_sentences)
+		return result_sentences
+
+
+# X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
+# X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+# X_train= correct_input_local(vocabulary, X)
+# print type(X_train)
+# print X_train[0]
+y_train=[0,1,7,6,0] # y has to be a list of numbers
+num_classes=8
+y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
+print (y_train)
+#
+
+
+<<<<<<< HEAD
+=======
+# Category 7
+samples7 = sc.get_samples(6)
+label7 = sc.get_label(6)
+
+print samples7
+print label7
+sys.exit()
+
+
+
+
+>>>>>>> e47292e56cfcefb447fc774634b0bcdbc50ebff7
 # -------------------- fake testing data --------------------------------
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
 # X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 # X_train= sc.correct_input(vocabulary, X)
 # y_train=[0,1,1,0] # y has to be a list of numbers
 # y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
+<<<<<<< HEAD
+=======
+>>>>>>> dd5bf0033e666a026d572bb348cb60db2ab24859
+>>>>>>> f9fa848ba5a9b942093fd4a4c383648178aaf0aa
+>>>>>>> e47292e56cfcefb447fc774634b0bcdbc50ebff7
 
 
 # ---------------------- bag of words concatenation -----------------------
@@ -92,7 +182,6 @@ def padding(data,region_size,vocabulary_length):
 	for line in result_sentences:
 		temp=np.array(line)
 		final_result.append(temp)
-
 	return final_result
 
 def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_vocabulary):
@@ -101,12 +190,18 @@ def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_voc
 	return np.ndarray for an image
 	'''
 	padded_matrix=padding(data,region_size,len_vocabulary) # still a list of lists 2D
-	print (np.array(padded_matrix))
+	#print (np.array(padded_matrix))
 	
 	result_matrix=[]
 	i=0
 	while i+(region_size-1) < len(padded_matrix):
-		temp=np.sum(padded_matrix[i:i+region_size],axis=0)
+		try:temp=np.sum(padded_matrix[i:i+region_size],axis=0)
+		except:
+			# print '--------------------'
+			# for j in range(i,i+region_size):
+			# 	print padded_matrix[j]
+			sys.exit('error!!')
+
 		result_matrix.append(temp)
 		i+=stride
 	result_matrix=np.array(result_matrix)
@@ -124,6 +219,7 @@ def bag_of_words_conversion(X_train,region_size,convolution_stride,words_in_sent
 # options: more layers
 # more parallels
 convoluted_input1=bag_of_words_conversion(X_train,region_size,convolution_stride,words,len_vocabulary)
+convoluted_window_height=convoluted_input1[0].shape[0]
 
 
 
@@ -149,10 +245,10 @@ model.compile(loss='categorical_crossentropy', # using the cross-entropy loss fu
               metrics=['accuracy']) # reporting the accuracy
 
 print(model.summary())
-'''
+
 # ---------- all together in one go ... it works ---------------
 model.fit(x=convoluted_input1, y=y_train)
-'''
+
 # ----------------- try to pass by batch -----------------------
 # seq = ToDenseSeq(convoluted_input1[:2],y_train[:2],1)
 # model.fit_generator(seq)
