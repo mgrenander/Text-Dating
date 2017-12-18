@@ -3,12 +3,6 @@ import data_preprocessor
 from keras.utils import to_categorical
 import numpy as np
 
-'''
-# THINGS I Changed
-self.mapping.append("1650-1675")
-return to_categorical([category],9)
-
-'''
 
 class SampleCreator:
     vocabulary = []
@@ -22,7 +16,6 @@ class SampleCreator:
         self.size_mapping = [0] * 8
 
         for i in range(0,8):
-            # TODO: clarify this part
             start = i*25 + 1725
             end = (i+1)*25 + 1725
             self.mapping.append("{}-{}".format(start,end))
@@ -30,27 +23,11 @@ class SampleCreator:
         self.mapping.append("1650-1675")
         # So now mapping[8] = "1650..."
 
-    # def correct_input(self, sentences):
-    #     dic = {}
-    #     for index, item in enumerate(self.vocabulary):
-    #         dic[item] = index
-    #     for sent in sentences:
-    #         sentence_matrix = []
-    #         for word in sent:
-    #             temp = [0] * len(self.vocabulary)
-    #             try:
-    #                 temp[dic[word]] = 1
-    #             except KeyError:
-    #                 pass
-    #             sentence_matrix.append(temp)
-    #         matrix= np.array(sentence_matrix)
-    #     # result_sentences=np.array(result_sentences)
-    #     return sentence_matrix
+
     def correct_input(self, sent):
         dic = {}
         for index, item in enumerate(self.vocabulary):
             dic[item] = index
-<<<<<<< HEAD
 
         sentence_matrix = []
         for word in sent:
@@ -63,21 +40,6 @@ class SampleCreator:
         matrix= np.array(sentence_matrix)
         # print matrix
         # sys.exit()
-=======
-        result_sentences = []
-        for sent in sentences:
-            sentence_matrix = []
-            for word in sent:
-                temp = [0] * len(self.vocabulary)
-                try:
-                    temp[dic[word]] = 1
-                except KeyError:
-                    pass
-                sentence_matrix.append(temp)
-            # matrix= np.array(sentence_matrix)
-            matrix = sentence_matrix
-            result_sentences.append(matrix)
->>>>>>> f9fa848ba5a9b942093fd4a4c383648178aaf0aa
         # result_sentences=np.array(result_sentences)
         return matrix
 
@@ -85,13 +47,7 @@ class SampleCreator:
     def get_samples(self, category):
         # Load data from category
         with open("Combined/" + str(self.mapping[category]) + "/document.txt", encoding='utf8') as f:
-<<<<<<< HEAD
             all_words = data_preprocessor.tokenize(f.read())
-=======
-        #with open("Combined/" + str(self.mapping[category]) + "/document.txt", 'r') as f:
-            all_words = data_preprocessor.tokenize(f.read())
-            #all_words = data_preprocessor.tokenize(f.read().decode("UTF-8"))
->>>>>>> e47292e56cfcefb447fc774634b0bcdbc50ebff7
             samples = []
             for i in range(0, len(all_words), self.sample_size):
                 pre_sample = all_words[i:i+self.sample_size]
@@ -100,30 +56,14 @@ class SampleCreator:
         # Update the size mapping
         self.size_mapping[category] = len(samples)
         return samples
-<<<<<<< HEAD
-=======
 
->>>>>>> f9fa848ba5a9b942093fd4a4c383648178aaf0aa
+
     def get_label(self, category):
-<<<<<<< HEAD
         # Returns label for the samples
         num_samples = self.size_mapping[category]
         return [to_categorical([category],8)] * num_samples
-=======
-        '''
-        input category: a single int 
-        '''
-        # TODO: get Seara's help for this part
-        # encoding_list = []
-        # for i in range(0,8):
-        #     if i == category:
-        #         encoding_list.append(1)
-        #     else:
-        #         encoding_list.append(0)
-        #return encoding_list
-        return to_categorical([category],9)
+
 
     def get_vocab_len(self):
         """Returns length of vocabulary"""
         return len(self.vocabulary)
->>>>>>> e47292e56cfcefb447fc774634b0bcdbc50ebff7

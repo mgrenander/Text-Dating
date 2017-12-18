@@ -6,3 +6,5 @@ Combined/
 .idea/
 .DS_store
 *.pyc
+~tensoflow/
+__pycache__/

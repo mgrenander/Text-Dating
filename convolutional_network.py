@@ -78,8 +78,6 @@ pooling_size=int((int(((words+(2*(region_size-1)))-region_size)/(convolution_str
 len_vocabulary=sc.get_vocab_len()
 #len_vocabulary=len(vocabulary)
 
-
-<<<<<<< HEAD
 # Category 7
 samples7 = sc.get_samples(6)
 label7 = sc.get_label(6)
@@ -87,9 +85,6 @@ label7 = sc.get_label(6)
 print(samples7)
 print(label7)
 sys.exit()
-
-=======
-
 
 # -------------------- fake testing data --------------------------------
 # def correct_input_local(vocabulary, sentences):
@@ -142,32 +137,12 @@ y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
 print (y_train)
 #
 
-
-<<<<<<< HEAD
-=======
-# Category 7
-samples7 = sc.get_samples(6)
-label7 = sc.get_label(6)
-
-print samples7
-print label7
-sys.exit()
-
-
-
-
->>>>>>> e47292e56cfcefb447fc774634b0bcdbc50ebff7
 # -------------------- fake testing data --------------------------------
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
 # X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 # X_train= sc.correct_input(vocabulary, X)
 # y_train=[0,1,1,0] # y has to be a list of numbers
 # y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
-<<<<<<< HEAD
-=======
->>>>>>> dd5bf0033e666a026d572bb348cb60db2ab24859
->>>>>>> f9fa848ba5a9b942093fd4a4c383648178aaf0aa
->>>>>>> e47292e56cfcefb447fc774634b0bcdbc50ebff7
 
 
 # ---------------------- bag of words concatenation -----------------------
