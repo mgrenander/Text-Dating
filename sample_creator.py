@@ -3,6 +3,13 @@ import data_preprocessor
 from keras.utils import to_categorical
 import numpy as np
 
+'''
+# THINGS I Changed
+self.mapping.append("1650-1675")
+return to_categorical([category],9)
+
+'''
+
 class SampleCreator:
     vocabulary = []
     sample_size = 0
@@ -11,8 +18,8 @@ class SampleCreator:
     def __init__(self, sample_size):
         self.vocabulary = data_preprocessor.create_vocabulary()
         self.sample_size = sample_size
-
         for i in range(0,8):
+            # TODO: clarify this part
             start = i*25 + 1725
             end = (i+1)*25 + 1725
             self.mapping.append("{}-{}".format(start,end))
@@ -50,6 +57,8 @@ class SampleCreator:
                 pass
             sentence_matrix.append(temp)
         matrix= np.array(sentence_matrix)
+        # print matrix
+        # sys.exit()
         # result_sentences=np.array(result_sentences)
         return matrix
 
@@ -82,6 +91,3 @@ class SampleCreator:
     def get_vocab_len(self):
         """Returns length of vocabulary"""
         return len(self.vocabulary)
-
-
-

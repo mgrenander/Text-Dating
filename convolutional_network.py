@@ -49,21 +49,21 @@ sc = SampleCreator(3) # was 100
 
 # dummy Category 8
 samples8 = sc.get_samples(8)
-print type(samples8)
-print samples8[0]
-print '-------------------------------'
+samples8=np.array(samples8)
 label8 = sc.get_label(8)
+print type(samples8)
+print samples8[0].shape
+print samples8[0]
 
 X_train=samples8
 y_train=label8
-
-#print samples8[0].shape
-# print samples8[0] # outer: a list of 21 items
-# print label8[0]
+print len(X_train)
+print y_train
+print '---------- what the fuck ?? ----------------'
 
 # ---------------------- CNN parameters ----------------------
 
-num_classes=2
+num_classes=9
 
 words=5
 convolution_stride=2
@@ -82,34 +82,55 @@ len_vocabulary=len(vocabulary)
 
 
 # -------------------- fake testing data --------------------------------
-def correct_input_local(vocabulary, sentences):
-	dic = {}
-	for index, item in enumerate(vocabulary):
-		dic[item] = index
-	result_sentences=[]
-	for sent in sentences:
-		sentence_matrix = []
-		for word in sent:
-			temp = [0] * len(vocabulary)
-			try:
-				temp[dic[word]] = 1
-			except KeyError:
-				pass
-			sentence_matrix.append(temp)
-		matrix= np.array(sentence_matrix)
-		result_sentences.append(matrix)
+# def correct_input_local(vocabulary, sentences):
+# 	dic = {}
+# 	for index, item in enumerate(vocabulary):
+# 		dic[item] = index
+# 	result_sentences=[]
+# 	for sent in sentences:
+# 		sentence_matrix = []
+# 		for word in sent:
+# 			temp = [0] * len(vocabulary)
+# 			try:
+# 				temp[dic[word]] = 1
+# 			except KeyError:
+# 				pass
+# 			sentence_matrix.append(temp)
+# 		matrix= sentence_matrix
+# 		result_sentences.append(matrix)
        
-	result_sentences=np.array(result_sentences)
-	return result_sentences
+# 	#result_sentences=np.array(result_sentences)
+# 	return result_sentences
+def correct_input_local(vocab, sentences):
+  	dic={}
+  	for index,item in enumerate(vocab):
+ 		dic[item]=index
+ 	result_sentences=[]
+ 	for sent in sentences:
+ 		sentence_matrix=[]
+ 		for word in sent:
+ 			temp=[0]*len(vocab)
+ 			try: temp[dic[word]]=1
+ 			except:
+ 				pass
+ 			sentence_matrix.append(temp)
+ 		#matrix= np.array(sentence_matrix)
+ 		matrix=sentence_matrix
+ 		result_sentences.append(matrix)
+ 	#result_sentences=np.array(result_sentences)
+ 	return result_sentences
 
-#X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
-X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+
+# X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
+X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 X_train= correct_input_local(vocabulary, X)
-print type(X_train[0])
-print X_train
-sys.exit()
-y_train=[0,1,1,0] # y has to be a list of numbers
+print type(X_train)
+print X_train[0]
+y_train=[0,1,0,1,0] # y has to be a list of numbers
+num_classes=2
 y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
+print y_train
+sys.exit()
 
 
 
@@ -163,7 +184,6 @@ def bag_of_words_conversion(X_train,region_size,convolution_stride,words_in_sent
 # options: more layers
 # more parallels
 convoluted_input1=bag_of_words_conversion(X_train,region_size,convolution_stride,words,len_vocabulary)
-
 
 
 input_1 = Input(shape=(convoluted_window_height,len_vocabulary)) # height, width, depth
