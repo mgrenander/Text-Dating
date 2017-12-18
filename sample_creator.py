@@ -1,6 +1,7 @@
 
 import data_preprocessor
 from keras.utils import to_categorical
+import numpy as np
 
 class SampleCreator:
     vocabulary = []
@@ -19,23 +20,38 @@ class SampleCreator:
         self.mapping.append("1650-1675")
         # So now mapping[8] = "1650..."
 
-    def correct_input(self, sentences):
+    # def correct_input(self, sentences):
+    #     dic = {}
+    #     for index, item in enumerate(self.vocabulary):
+    #         dic[item] = index
+    #     for sent in sentences:
+    #         sentence_matrix = []
+    #         for word in sent:
+    #             temp = [0] * len(self.vocabulary)
+    #             try:
+    #                 temp[dic[word]] = 1
+    #             except KeyError:
+    #                 pass
+    #             sentence_matrix.append(temp)
+    #         matrix= np.array(sentence_matrix)
+    #     # result_sentences=np.array(result_sentences)
+    #     return sentence_matrix
+    def correct_input(self, sent):
         dic = {}
         for index, item in enumerate(self.vocabulary):
             dic[item] = index
-        for sent in sentences:
-            sentence_matrix = []
-            for word in sent:
-                temp = [0] * len(self.vocabulary)
-                try:
-                    temp[dic[word]] = 1
-                except KeyError:
-                    pass
-                sentence_matrix.append(temp)
-            # matrix= np.array(sentence_matrix)
-            sentence_matrix
+
+        sentence_matrix = []
+        for word in sent:
+            temp = [0] * len(self.vocabulary)
+            try:
+                temp[dic[word]] = 1
+            except KeyError:
+                pass
+            sentence_matrix.append(temp)
+        matrix= np.array(sentence_matrix)
         # result_sentences=np.array(result_sentences)
-        return sentence_matrix
+        return matrix
 
 
     def get_samples(self, category):
@@ -62,6 +78,10 @@ class SampleCreator:
         #         encoding_list.append(0)
         #return encoding_list
         return to_categorical([category],9)
+
+    def get_vocab_len(self):
+        """Returns length of vocabulary"""
+        return len(self.vocabulary)
 
 
 
