@@ -25,7 +25,10 @@ class SampleCreator:
             sentence_matrix = []
             for word in sent:
                 temp = [0] * len(self.vocabulary)
-                temp[dic[word]] = 1
+                try:
+                    temp[dic[word]] = 1
+                except KeyError:
+                    pass
                 sentence_matrix.append(temp)
             # matrix= np.array(sentence_matrix)
             matrix = sentence_matrix
@@ -42,6 +45,7 @@ class SampleCreator:
             for i in range(0, len(all_words), self.sample_size):
                 pre_sample = all_words[i:i+self.sample_size]
                 samples.append(self.correct_input(pre_sample))
+        return samples
 
     def get_label(self, category):
         # TODO: get Seara's help for this part

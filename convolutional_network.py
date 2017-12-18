@@ -64,17 +64,21 @@ pooling_units=100
 #----------------------------- reading in data ------------------------
 
 sc = SampleCreator(400)
+for i in range(0,8):
+	X_train = sc.get_samples(i)
+	y_train = sc.get_label(i)
+
 
 #X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
 X=['I went to school yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
-X_train= sc.correct_input(vocabulary, X)
+X_train= sc.correct_input(X)
 y_train=[0,1,1,0] # y has to be a list of numbers
 y_train = to_categorical(y_train, num_classes) # One-hot encode the labels
 
 
 # ---------------------- bag of words concatenation -----------------------
 def padding(data,region_size,vocabulary_length):
-	#result_sentences = np.ndarray(shape=(len(data)+2*(region_size-1),vocabulary),dtype=float)	
+	#result_sentences = np.ndarray(shape=(len(data)+2*(region_size-1),vocabulary),dtype=float)
 	result_sentences=[[0]*vocabulary_length for i in range(region_size-1)]
 	result_sentences.extend(data)
 	result_sentences.extend([[0]*vocabulary_length for i in range(region_size-1)])
