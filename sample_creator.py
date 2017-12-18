@@ -65,10 +65,10 @@ class SampleCreator:
 
     def get_samples(self, category):
         # Load data from category
-        #with open("Combined/" + str(self.mapping[category]) + "/document.txt", encoding='utf8') as f:
-        with open("Combined/" + str(self.mapping[category]) + "/document.txt", 'r') as f:
-            #all_words = data_preprocessor.tokenize(f.read())
-            all_words = data_preprocessor.tokenize(f.read().decode("UTF-8"))
+        with open("Combined/" + str(self.mapping[category]) + "/document.txt", encoding='utf8') as f:
+        #with open("Combined/" + str(self.mapping[category]) + "/document.txt", 'r') as f:
+            all_words = data_preprocessor.tokenize(f.read())
+            #all_words = data_preprocessor.tokenize(f.read().decode("UTF-8"))
             samples = []
             for i in range(0, len(all_words), self.sample_size):
                 pre_sample = all_words[i:i+self.sample_size]
