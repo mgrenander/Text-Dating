@@ -26,7 +26,7 @@ class SampleCreator:
         for index, item in enumerate(vocab_list):
             self.vocabulary[item] = index
 
-        # self.mapping.append("1650-1675")
+        self.mapping.append("1650-1675")
         # So now mapping[8] = "1650..."
 
 
@@ -89,8 +89,8 @@ if __name__ == "__main__":
     # all_labels = np.array(all_labels)
 
     # TESTING
-    # test_sample = sc.get_samples(8)
-    # test_labels = np.array(sc.get_label(8))
+    test_sample = sc.get_samples(8)
+    test_labels = np.array(sc.get_label(8))
 
     ##### PICKLING
     # Create pickle folder
@@ -98,8 +98,8 @@ if __name__ == "__main__":
         os.makedirs("Pickles")
 
     # Pickle only the test sample
-    # pickle_test = open("Pickles/test_pickle.pickle", "wb")
-    # pickle.dump((test_sample, test_labels), pickle_test)
+    pickle_test = open("Pickles/test_pickle.pickle", "wb")
+    pickle.dump((test_sample, test_labels), pickle_test)
 
     # Pickle all samples
     # pickle_all = open("Pickles/samples_labels.pickle", "wb")
