@@ -80,6 +80,20 @@ class SampleCreator:
         return len(self.vocabulary)
 
 
+def concat_pickles():
+    """"To retrive pickles containing labels and samples"""
+    samples = []
+    labels = []
+
+    for i in range(0, 8):
+        pickle_data = open("Pickles/pick" + str(i) + ".pickle", "rb")
+        pick_sample, pick_label = pickle.load(pickle_data)
+        samples += pick_sample
+        labels += pick_label
+
+    pickle_all = open("Pickles/pickle_all.pickle", "wb")
+    pickle.dump((samples, np.array(labels)), pickle_all)
+
 if __name__ == "__main__":
     # Create samples and pickle data
     sc = SampleCreator(400, 8)
@@ -98,6 +112,8 @@ if __name__ == "__main__":
         # Clear memory (these variables are huge!)
         gc.collect()
 
+    # Concatenate all the pickles
+    concat_pickles()
 
     # Convert all_labels to numpy array
     # all_labels = np.array(all_labels)
@@ -105,11 +121,6 @@ if __name__ == "__main__":
     # TESTING
     # test_sample = sc.get_samples(8)
     # test_labels = np.array(sc.get_label(8))
-
-    ##### PICKLING
-    # Create pickle folder
-    if not os.path.exists("Pickles"):
-        os.makedirs("Pickles")
 
     # Pickle only the test sample
     # pickle_test = open("Pickles/test_pickle.pickle", "wb")

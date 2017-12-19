@@ -27,19 +27,6 @@ import tensorflow as tf
 
 start = time.time()
 
-def get_pickles():
-	""""To retrive pickles containing labels and samples"""
-	samples = []
-	labels = []
-
-	for i in range(0, 8):
-		pickle_data = open("Pickles/pick" + str(i) + ".pickle", "rb")
-		pick_sample, pick_label = pickle.load(pickle_data)
-		samples += pick_sample
-		labels += labels
-
-	return (samples, np.array(labels))
-
 
 class ToDenseSeq(Sequence):
 
@@ -61,16 +48,18 @@ class ToDenseSeq(Sequence):
         pass
 
 # ------------------------ Matt new ---------------------------
-X_train_new, y_train_new = get_pickles()
+pickle_all = open("Pickles/pickle_all.pickle", 'rb')
+X_train, y_train = pickle.load(pickle_all)
+print(len(X_train))
+print(len(y_train))
+
 
 # Small test sample
 pickle_in = open("Pickles/test_pickle.pickle", 'rb')
 X_train, y_train = pickle.load(pickle_in)
-print (X_train)
-print(type(X_train))
-print (type(X_train[0]))
-print (type(X_train[0][0]))
-print (type(X_train[0][0][0]))
+print (len(X_train))
+print (len(y_train))
+sys.exit()
 print ('------- on to my part -----------')
 # print(X_train)
 
