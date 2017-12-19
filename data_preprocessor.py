@@ -12,7 +12,7 @@ texts_folder = "Texts/"
 proc_folder = "Processed/"
 comb_folder = "Combined/"
 samples_folder = "Samples/"
-n = 10000
+n = 1000
 
 def parse(folder, filename):
     """Perform a variety of tasks to parse the raw text into usable format

@@ -4,6 +4,7 @@ from keras.utils import to_categorical
 import numpy as np
 import pickle
 import os
+import gc
 
 class SampleCreator:
     vocabulary = dict()
@@ -18,7 +19,7 @@ class SampleCreator:
         self.num_categories = num_categories
         self.size_mapping = [0] * num_categories
 
-        for i in range(0,8): # TODO: change this after done testing with 1650-1675
+        for i in range(0,8):
             start = i*25 + 1725
             end = (i+1)*25 + 1725
             self.mapping.append("{}-{}".format(start,end))
@@ -26,7 +27,7 @@ class SampleCreator:
         for index, item in enumerate(vocab_list):
             self.vocabulary[item] = index
 
-        # self.mapping.append("1650-1675")
+        self.mapping.append("1650-1675")
         # So now mapping[8] = "1650..."
 
 
@@ -51,7 +52,14 @@ class SampleCreator:
             all_words = data_preprocessor.tokenize(f.read())
             samples = []
             for i in range(0, len(all_words), self.sample_size):
+                # Ensure we don't include the last one, we may not be of size sample_size
+                if i + self.sample_size >= len(all_words):
+                    break
+
                 pre_sample = all_words[i:i+self.sample_size]
+
+                print(len(pre_sample))
+
                 samples.append(self.correct_input(pre_sample))
 
         # Update the size mapping
@@ -74,28 +82,45 @@ class SampleCreator:
         """Returns length of vocabulary"""
         return len(self.vocabulary)
 
+
+    def get_pickles(self):
+        samples = []
+        labels = []
+
+        for i in range(0,8):
+            pickle_data = open("Pickles/pick" + str(i) + ".pickle", "rb")
+            pick_sample, pick_label = pickle.load(pickle_data)
+            samples += pick_sample
+            labels += labels
+
+        return (samples, np.array(labels))
+
+
 if __name__ == "__main__":
     # Create samples and pickle data
-    sc = SampleCreator(5, 9)
+    sc = SampleCreator(400, 8)
 
-    # all_samples = []
-    # all_labels = []
-    # for i in range(0,7):
-    #     print("Computing sample values at category " + str(i))
-    #     all_samples += sc.get_samples(i)
-    #     all_labels += sc.get_label(i)
-
-    # # Convert all_labels to numpy array
-    # all_labels = np.array(all_labels)
-
-    # TESTING
-    # test_sample = sc.get_samples(8)
-    # test_labels = np.array(sc.get_label(8))
-
-    ##### PICKLING
     # Create pickle folder
     if not os.path.exists("Pickles"):
         os.makedirs("Pickles")
+
+    # for i in range(0,8):
+    #     print("Computing sample values at category " + str(i))
+    #     samples = sc.get_samples(i)
+    #     labels = sc.get_label(i)
+    #     pickle_cat = open("Pickles/pick" + str(i) + ".pickle", "wb")
+    #     pickle.dump((samples, labels), pickle_cat)
+    #
+    #     # Clear memory (these variables are huge!)
+    #     gc.collect()
+
+
+    # Convert all_labels to numpy array
+    # all_labels = np.array(all_labels)
+
+    # TESTING
+    test_sample = sc.get_samples(0)
+    test_labels = np.array(sc.get_label(0))
 
     # Pickle only the test sample
     # pickle_test = open("Pickles/test_pickle.pickle", "wb")
