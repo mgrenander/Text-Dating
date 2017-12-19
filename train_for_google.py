@@ -50,7 +50,7 @@ class ToDenseSeq(Sequence):
 
 def train_model_seara(train_file='test_pickle.pickle', **args):
 	# Here put all the main training code in this function
-	file_stream = file_io.FileIO(train_file, mode='rb')
+	file_stream = file_io.FileIO(train_file, mode='r')
 	X_train, y_train= pickle.load(file_stream)
 
 	words=5 # number of words per sample
