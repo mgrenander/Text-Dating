@@ -12,7 +12,7 @@ texts_folder = "Texts/"
 proc_folder = "Processed/"
 comb_folder = "Combined/"
 samples_folder = "Samples/"
-
+n = 10000
 
 def parse(folder, filename):
     """Perform a variety of tasks to parse the raw text into usable format
@@ -119,13 +119,13 @@ def create_vocabulary():
     feature_array = np.array(vectorizer.get_feature_names())
     tfidf_sorting = np.argsort(X.toarray()).flatten()[::-1]
 
-    #n = 10000
-    n=100
     top_n = feature_array[tfidf_sorting][:n]
     print ("finished TFIDF computations")
     return top_n
 
 
+def get_vocab_len():
+    return n
 
 # ------------- Main script begins --------------- #
 if __name__ == "__main__":
