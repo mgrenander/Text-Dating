@@ -158,17 +158,13 @@ def correct_input_local(vocab, sentences):
 
 
 # X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
-vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
-len_vocabulary= len(vocabulary)
-X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
-X_train= correct_input_local(vocabulary, X)
-# print (type(X_train_seara))
-# print (type(X_train_seara[0]))
-# print (type(X_train_seara[0][0]))
-# print (type(X_train_seara[0][0][0]))
-num_classes=2
-y_train=[0,1,1,1,0] # y has to be a list of numbers
-y_train = to_categorical(y_train, 2) # One-hot encode the labels
+# vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
+# len_vocabulary= len(vocabulary)
+# X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+# X_train= correct_input_local(vocabulary, X)
+# num_classes=2
+# y_train=[0,1,1,1,0] # y has to be a list of numbers
+# y_train = to_categorical(y_train, 2) # One-hot encode the labels
 # print (y_train)
 print ('----generated so far by seara-----')
 
@@ -176,6 +172,10 @@ print ('----generated so far by seara-----')
 # ---------------------- bag of words concatenation -----------------------
 def padding(data,region_size,vocabulary_length):
 	#result_sentences = np.ndarray(shape=(len(data)+2*(region_size-1),vocabulary),dtype=float)
+	if len(data) != 5:
+		print (len(data))
+		print (data)
+		sys.exit('its from preprocessing')
 	result_sentences=[[0]*vocabulary_length for i in range(region_size-1)]
 	result_sentences.extend(data)
 	result_sentences.extend([[0]*vocabulary_length for i in range(region_size-1)])
@@ -194,8 +194,9 @@ def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_voc
 	return np.ndarray for an image
 	'''
 	padded_matrix=padding(data,region_size,len_vocabulary) # still a list of lists 2D
-	#print (np.array(padded_matrix))
-	
+	if len(padded_matrix) != 9:
+		print (len(padded_matrix))
+		sys.exit('WTF?')
 	result_matrix=[]
 	i=0
 	while i+(region_size-1) < len(padded_matrix):
@@ -209,6 +210,10 @@ def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_voc
 		result_matrix.append(temp)
 		i+=stride
 	result_matrix=np.array(result_matrix) # original
+	if result_matrix.shape[0] != 4:
+		print (len(padded_matrix))
+		sys.exit('WTF? aaaa')
+
 	return np.array(result_matrix) # original
 	
 
@@ -245,12 +250,12 @@ conv1d_1 = Conv1D(num_weights,1,activation='relu',padding='same')(input_1)
 #conv1d_2 = Conv1D(num_weights,1,activation='relu',padding='same')(input_1)
 max_pooling1d_1 = AveragePooling1D(pool_size=pooling_size)(conv1d_1)
 
-conv1d_2 = Conv1D(num_weights,1,activation='relu')(max_pooling1d_1)
-max_pooling1d_2 = AveragePooling1D(pool_size=pooling_size)(conv1d_2)
+# conv1d_2 = Conv1D(num_weights,1,activation='relu')(max_pooling1d_1)
+# max_pooling1d_2 = AveragePooling1D(pool_size=pooling_size)(conv1d_2)
 
 
-flatten_1 = Flatten()(max_pooling1d_2)
-#flatten_1 = Flatten()(max_pooling1d_1)
+#flatten_1 = Flatten()(max_pooling1d_2)
+flatten_1 = Flatten()(max_pooling1d_1)
 dense_1 = Dense(words,activation='relu')(flatten_1)
 dense_2 = Dense(num_classes, activation="softmax")(dense_1)
 
