@@ -26,11 +26,14 @@ import pickle
 import tensorflow as tf
 
 start = time.time()
+# ------------ PARAMETERS TO CHANGE -------------------------
+'''
+words  : should match the number of words in a sample from preprocessing 
+change "n" from your preprocessing : for actual size of vocabulary desired
+X_train , y_train     pickled from test_pickle or pickle_all decide wether it is the small test sample or the entire data run.
+'''
+# -----------------------------------------------
 
-<<<<<<< HEAD
-=======
-
->>>>>>> fd98a8e2540eb49c423d65ecdffc62d2991835b2
 class ToDenseSeq(Sequence):
 
     def __init__(self, x_set, y_set, batch_size):
@@ -51,15 +54,13 @@ class ToDenseSeq(Sequence):
         pass
 
 # ------------------------ Matt new ---------------------------
-<<<<<<< HEAD
-=======
+
 pickle_all = open("Pickles/pickle_all.pickle", 'rb')
 X_train, y_train = pickle.load(pickle_all)
 print(len(X_train))
 print(len(y_train))
 
 
->>>>>>> fd98a8e2540eb49c423d65ecdffc62d2991835b2
 # Small test sample
 pickle_in = open("Pickles/test_pickle.pickle", 'rb')
 X_train, y_train = pickle.load(pickle_in)
