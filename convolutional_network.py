@@ -27,6 +27,10 @@ import tensorflow as tf
 
 start = time.time()
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> fd98a8e2540eb49c423d65ecdffc62d2991835b2
 class ToDenseSeq(Sequence):
 
     def __init__(self, x_set, y_set, batch_size):
@@ -47,14 +51,21 @@ class ToDenseSeq(Sequence):
         pass
 
 # ------------------------ Matt new ---------------------------
+<<<<<<< HEAD
+=======
+pickle_all = open("Pickles/pickle_all.pickle", 'rb')
+X_train, y_train = pickle.load(pickle_all)
+print(len(X_train))
+print(len(y_train))
+
+
+>>>>>>> fd98a8e2540eb49c423d65ecdffc62d2991835b2
 # Small test sample
 pickle_in = open("Pickles/test_pickle.pickle", 'rb')
 X_train, y_train = pickle.load(pickle_in)
-print (X_train)
-print(type(X_train))
-print (type(X_train[0]))
-print (type(X_train[0][0]))
-print (type(X_train[0][0][0]))
+print (len(X_train))
+print (len(y_train))
+sys.exit()
 print ('------- on to my part -----------')
 # print(X_train)
 

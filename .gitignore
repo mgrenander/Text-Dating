@@ -10,3 +10,4 @@ Combined/
 __pycache__/
 Pickles/test_pickle.pickle
 Pickles/samples_label.pickle
+Pickles/
