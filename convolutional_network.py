@@ -161,15 +161,14 @@ def correct_input_local(vocab, sentences):
 vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
 len_vocabulary= len(vocabulary)
 X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
-
-X_train_seara= correct_input_local(vocabulary, X)
-print (type(X_train_seara))
-print (type(X_train_seara[0]))
-print (type(X_train_seara[0][0]))
-print (type(X_train_seara[0][0][0]))
-# num_classes=2
-# y_train=[0,1,1,1,0] # y has to be a list of numbers
-# y_train = to_categorical(y_train, 2) # One-hot encode the labels
+X_train= correct_input_local(vocabulary, X)
+# print (type(X_train_seara))
+# print (type(X_train_seara[0]))
+# print (type(X_train_seara[0][0]))
+# print (type(X_train_seara[0][0][0]))
+num_classes=2
+y_train=[0,1,1,1,0] # y has to be a list of numbers
+y_train = to_categorical(y_train, 2) # One-hot encode the labels
 # print (y_train)
 print ('----generated so far by seara-----')
 
@@ -202,14 +201,14 @@ def bag_of_words_convolution_persample(data,region_size,stride,num_words,len_voc
 	while i+(region_size-1) < len(padded_matrix):
 		try:temp=np.sum(padded_matrix[i:i+region_size],axis=0)
 		except:
-			# print '--------------------'
-			# for j in range(i,i+region_size):
-			# 	print padded_matrix[j]
+			print ('--------------------')
+			for j in range(i,i+region_size):
+				print (padded_matrix[j])
 			sys.exit('error!!')
 
 		result_matrix.append(temp)
 		i+=stride
-	#result_matrix=np.array(result_matrix) # original
+	result_matrix=np.array(result_matrix) # original
 	return np.array(result_matrix) # original
 	
 
@@ -226,10 +225,10 @@ def bag_of_words_conversion(X_train,region_size,convolution_stride,words_in_sent
 
 # options: more layers
 # more parallels
-len_vocabulary=data_preprocessor.get_vocab_len()
+#len_vocabulary=data_preprocessor.get_vocab_len()
 convoluted_input1=bag_of_words_conversion(X_train,region_size,convolution_stride,words,len_vocabulary)
-print (convoluted_input1.shape)
-sys.exit()
+# print (convoluted_input1.shape)
+# sys.exit()
 
 
 convoluted_window_height=convoluted_input1[0].shape[0] 
