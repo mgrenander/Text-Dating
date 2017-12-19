@@ -19,7 +19,7 @@ class SampleCreator:
         self.num_categories = num_categories
         self.size_mapping = [0] * num_categories
 
-        for i in range(0,8):
+        for i in range(0,8): # TODO: change this after done testing with 1650-1675
             start = i*25 + 1725
             end = (i+1)*25 + 1725
             self.mapping.append("{}-{}".format(start,end))
@@ -98,7 +98,7 @@ class SampleCreator:
 
 if __name__ == "__main__":
     # Create samples and pickle data
-    sc = SampleCreator(400, 8)
+    sc = SampleCreator(5, 9)
 
     # Create pickle folder
     if not os.path.exists("Pickles"):
@@ -119,12 +119,17 @@ if __name__ == "__main__":
     # all_labels = np.array(all_labels)
 
     # TESTING
-    test_sample = sc.get_samples(0)
-    test_labels = np.array(sc.get_label(0))
+    test_sample = sc.get_samples(8)
+    test_labels = np.array(sc.get_label(8))
+
+    ##### PICKLING
+    # Create pickle folder
+    if not os.path.exists("Pickles"):
+        os.makedirs("Pickles")
 
     # Pickle only the test sample
-    # pickle_test = open("Pickles/test_pickle.pickle", "wb")
-    # pickle.dump((test_sample, test_labels), pickle_test)
+    pickle_test = open("Pickles/test_pickle.pickle", "wb")
+    pickle.dump((test_sample, test_labels), pickle_test)
 
     # Pickle all samples
     # pickle_all = open("Pickles/samples_labels.pickle", "wb")
