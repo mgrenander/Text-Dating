@@ -19,7 +19,7 @@ class SampleCreator:
         self.num_categories = num_categories
         self.size_mapping = [0] * num_categories
 
-        for i in range(0,8): # TODO: change this after done testing with 1650-1675
+        for i in range(0,8):
             start = i*25 + 1725
             end = (i+1)*25 + 1725
             self.mapping.append("{}-{}".format(start,end))
@@ -57,9 +57,6 @@ class SampleCreator:
                     break
 
                 pre_sample = all_words[i:i+self.sample_size]
-
-                print(len(pre_sample))
-
                 samples.append(self.correct_input(pre_sample))
 
         # Update the size mapping
