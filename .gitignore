@@ -8,4 +8,5 @@ Combined/
 *.pyc
 ~tensoflow/
 __pycache__/
-Pickles/
+Pickles/test_pickle.pickle
+Pickles/samples_label.pickle

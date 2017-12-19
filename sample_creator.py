@@ -76,17 +76,17 @@ class SampleCreator:
 
 if __name__ == "__main__":
     # Create samples and pickle data
-    sc = SampleCreator(400, 8)
+    sc = SampleCreator(5, 9)
 
-    all_samples = []
-    all_labels = []
-    for i in range(0,7):
-        print("Computing sample values at category " + str(i))
-        all_samples += sc.get_samples(i)
-        all_labels += sc.get_label(i)
+    # all_samples = []
+    # all_labels = []
+    # for i in range(0,7):
+    #     print("Computing sample values at category " + str(i))
+    #     all_samples += sc.get_samples(i)
+    #     all_labels += sc.get_label(i)
 
-    # Convert all_labels to numpy array
-    all_labels = np.array(all_labels)
+    # # Convert all_labels to numpy array
+    # all_labels = np.array(all_labels)
 
     # TESTING
     # test_sample = sc.get_samples(8)
@@ -102,5 +102,5 @@ if __name__ == "__main__":
     # pickle.dump((test_sample, test_labels), pickle_test)
 
     # Pickle all samples
-    pickle_all = open("Pickles/samples_labels.pickle", "wb")
-    pickle.dump((all_samples, all_labels), pickle_all)
+    # pickle_all = open("Pickles/samples_labels.pickle", "wb")
+    # pickle.dump((all_samples, all_labels), pickle_all)
