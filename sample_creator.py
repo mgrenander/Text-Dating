@@ -106,5 +106,4 @@ if __name__ == "__main__":
 
     # Pickle all samples
     pickle_all = open("Pickles/samples_labels.pickle", "wb")
-
     pickle.dump((all_samples, all_labels), pickle_all)
