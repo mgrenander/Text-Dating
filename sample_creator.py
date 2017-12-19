@@ -43,7 +43,7 @@ class SampleCreator:
                 pass
 
             sentence_matrix.append(word_vec)
-        return sentence_matrix
+        return np.array(sentence_matrix, dtype=np.int16)
 
 
     def get_samples(self, category):
@@ -61,13 +61,13 @@ class SampleCreator:
 
         # Update the size mapping
         self.size_mapping[category] = len(samples)
-        return samples
+        return np.array(samples)
 
 
     def get_label(self, category):
         # Returns label for the samples
         num_samples = self.size_mapping[category]
-        one_label = to_categorical(category, self.num_categories)
+        one_label = to_categorical(category, self.num_categories).astype(np.int16, copy=False)
 
         labels = []
         for i in range(0, num_samples):
@@ -81,18 +81,18 @@ class SampleCreator:
 
 
 def concat_pickles():
-    """"To retrive pickles containing labels and samples"""
+    """"To retrieve pickles containing labels and samples"""
     samples = []
     labels = []
 
     for i in range(0, 8):
-        pickle_data = open("Pickles/pick" + str(i) + ".pickle", "rb")
+        pickle_data = open("D:/Pickles/pick" + str(i) + ".pickle", "rb")
         pick_sample, pick_label = pickle.load(pickle_data)
         samples += pick_sample
         labels += pick_label
 
-    pickle_all = open("Pickles/pickle_all.pickle", "wb")
-    pickle.dump((samples, np.array(labels)), pickle_all)
+    pickle_all = open("D:/Pickles/pickle_all.pickle", "wb")
+    pickle.dump((np.array(samples), np.array(labels)), pickle_all, protocol=2)
 
 if __name__ == "__main__":
     # Create samples and pickle data
@@ -102,12 +102,12 @@ if __name__ == "__main__":
     if not os.path.exists("Pickles"):
         os.makedirs("Pickles")
 
-    for i in range(0, sc.num_categories):
+    for i in range(5, sc.num_categories):
         print("Computing sample values at category " + str(i))
         samples = sc.get_samples(i)
         labels = sc.get_label(i)
-        pickle_cat = open("Pickles/pick" + str(i) + ".pickle", "wb")
-        pickle.dump((samples, labels), pickle_cat)
+        pickle_cat = open("D:/Pickles/pick" + str(i) + ".pickle", "wb")
+        pickle.dump((samples, labels), pickle_cat, protocol=2)
 
         # Clear memory (these variables are huge!)
         gc.collect()
@@ -115,17 +115,10 @@ if __name__ == "__main__":
     # Concatenate all the pickles
     concat_pickles()
 
-    # Convert all_labels to numpy array
-    # all_labels = np.array(all_labels)
-
     # TESTING
-    # test_sample = sc.get_samples(8)
+    # test_sample = np.array(sc.get_samples(8))
     # test_labels = np.array(sc.get_label(8))
 
     # Pickle only the test sample
     # pickle_test = open("Pickles/test_pickle.pickle", "wb")
-    # pickle.dump((test_sample, test_labels), pickle_test)
-
-    # Pickle all samples
-    # pickle_all = open("Pickles/samples_labels.pickle", "wb")
-    # pickle.dump((all_samples, all_labels), pickle_all)
+    # pickle.dump((test_sample, test_labels), pickle_test, protocol=2)
