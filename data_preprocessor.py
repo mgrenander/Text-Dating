@@ -12,8 +12,8 @@ texts_folder = "Texts/"
 proc_folder = "Processed/"
 comb_folder = "Combined/"
 samples_folder = "Samples/"
-#n = 10000
-n = 10
+n = 2000
+# n = 10
 
 def parse(folder, filename):
     """Perform a variety of tasks to parse the raw text into usable format
@@ -108,7 +108,7 @@ def create_vocabulary():
 
     # Create all the file paths
     docs = []
-    for i in range(1750, 1925, 25):
+    for i in range(1725, 1925, 25):
         foldername = comb_folder + "{}-{}/document.txt".format(i, i + 25)
         docs.append(foldername)
 
