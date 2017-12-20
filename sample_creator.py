@@ -132,8 +132,8 @@ if __name__ == "__main__":
     # Concatenate all the pickles
     # concat_pickles()
 
-    sparse_samples = sparse.csr_matrix(np.array(all_samples))
-    sparse_labels = sparse.csr_matrix(np.array(all_labels))
+    sparse_samples = sparse.coo_matrix(np.array(all_samples))
+    sparse_labels = sparse.coo_matrix(np.array(all_labels))
     pickle_all = open("Pickles/pickle_all.pickle", "wb")
     pickle.dump((sparse_samples, sparse_labels), pickle_all, protocol=2)
 
