@@ -46,8 +46,8 @@ class SampleCreator:
 
     def get_samples(self, category):
         # Load data from category
-        with open("Combined/" + str(self.mapping[category]) + "/document.txt", encoding="utf8") as f:
-            all_words = data_preprocessor.tokenize(f.read())
+        with open("Combined/" + str(self.mapping[category]) + "/document.txt") as f:
+            all_words = data_preprocessor.tokenize(f.read().decode("UTF-8"))
             samples = []
             for i in range(0, len(all_words), self.sample_size):
                 # Ensure we don't include the last one, we may not be of size sample_size
