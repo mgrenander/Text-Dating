@@ -243,7 +243,7 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 			if (counter > number_of_batches):
 				counter=0
 
-	model.fit_generator(generator=batch_generator(X_train, y_train, 25),
+	model.fit_generator(generator=batch_generator(X_train, y_train, 100),
 	                   # nb_epoch=nb_epoch, 
 	                    samples_per_epoch=X_train.shape[0])
 	print (model.evaluate_generator(generator=batch_generator(X_test, y_test, 25),steps=100))
