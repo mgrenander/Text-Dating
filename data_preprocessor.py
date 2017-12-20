@@ -12,7 +12,7 @@ texts_folder = "Texts/"
 proc_folder = "Processed/"
 comb_folder = "Combined/"
 samples_folder = "Samples/"
-n = 10000
+n = 2000
 # n = 10
 
 def parse(folder, filename):
