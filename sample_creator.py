@@ -48,8 +48,8 @@ class SampleCreator:
 
     def get_samples(self, category):
         # Load data from category
-        with open("Combined/" + str(self.mapping[category]) + "/document.txt", encoding='utf8') as f:
-            all_words = data_preprocessor.tokenize(f.read())
+        with open("Combined/" + str(self.mapping[category]) + "/document.txt") as f:
+            all_words = data_preprocessor.tokenize(f.read().decode("UTF-8"))
             samples = []
             for i in range(0, len(all_words), self.sample_size):
                 # Ensure we don't include the last one, we may not be of size sample_size
@@ -86,12 +86,12 @@ def concat_pickles():
     labels = []
 
     for i in range(0, 8):
-        pickle_data = open("D:/Pickles/pick" + str(i) + ".pickle", "rb")
+        pickle_data = open("Pickles/pick" + str(i) + ".pickle", "rb")
         pick_sample, pick_label = pickle.load(pickle_data)
         samples += pick_sample
         labels += pick_label
 
-    pickle_all = open("D:/Pickles/pickle_all.pickle", "wb")
+    pickle_all = open("Pickles/pickle_all.pickle", "wb")
     pickle.dump((np.array(samples), np.array(labels)), pickle_all, protocol=2)
 
 if __name__ == "__main__":
