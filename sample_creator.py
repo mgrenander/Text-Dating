@@ -4,6 +4,7 @@ from keras.utils import to_categorical
 import numpy as np
 import pickle
 import os
+import sys
 import gc
 
 class SampleCreator:
@@ -94,6 +95,19 @@ def concat_pickles():
     pickle_all = open("Pickles/pickle_all.pickle", "wb")
     pickle.dump((np.array(samples), np.array(labels)), pickle_all, protocol=2)
 
+
+def save_as_pickled_object(obj, filepath):
+    """
+    This is a defensive way to write pickle.write, allowing for very large files on all platforms
+    """
+    max_bytes = 2**31 - 1
+    bytes_out = pickle.dumps(obj)
+    n_bytes = sys.getsizeof(bytes_out)
+    with open(filepath, 'wb') as f_out:
+        for idx in range(0, n_bytes, max_bytes):
+            f_out.write(bytes_out[idx:idx+max_bytes])
+
+
 if __name__ == "__main__":
     # Create samples and pickle data
     sc = SampleCreator(400, 8)
@@ -102,18 +116,22 @@ if __name__ == "__main__":
     if not os.path.exists("Pickles"):
         os.makedirs("Pickles")
 
-    for i in range(5, sc.num_categories):
+    all_samples = []
+    all_labels = []
+    for i in range(0, sc.num_categories):
         print("Computing sample values at category " + str(i))
-        samples = sc.get_samples(i)
-        labels = sc.get_label(i)
-        pickle_cat = open("Pickles/pick" + str(i) + ".pickle", "wb")
-        pickle.dump((samples, labels), pickle_cat, protocol=2)
+        all_samples += sc.get_samples(i)
+        all_labels += sc.get_label(i)
+        # pickle_cat = open("Pickles/pick" + str(i) + ".pickle", "wb")
+        # pickle.dump((samples, labels), pickle_cat, protocol=2)
 
         # Clear memory (these variables are huge!)
-        gc.collect()
+        # gc.collect()
 
     # Concatenate all the pickles
-    concat_pickles()
+    # concat_pickles()
+
+    save_as_pickled_object((np.array(all_samples), np.array(all_labels)), "Pickles/pickle_all.pickle")
 
     # TESTING
     # test_sample = np.array(sc.get_samples(8))
