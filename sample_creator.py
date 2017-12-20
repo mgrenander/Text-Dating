@@ -106,7 +106,7 @@ if __name__ == "__main__":
         print("Computing sample values at category " + str(i))
         samples = sc.get_samples(i)
         labels = sc.get_label(i)
-        pickle_cat = open("D:/Pickles/pick" + str(i) + ".pickle", "wb")
+        pickle_cat = open("Pickles/pick" + str(i) + ".pickle", "wb")
         pickle.dump((samples, labels), pickle_cat, protocol=2)
 
         # Clear memory (these variables are huge!)
