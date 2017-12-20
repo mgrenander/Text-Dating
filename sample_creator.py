@@ -6,6 +6,7 @@ import pickle
 import os
 import sys
 import gc
+from scipy import sparse
 
 class SampleCreator:
     vocabulary = dict()
@@ -62,7 +63,7 @@ class SampleCreator:
 
         # Update the size mapping
         self.size_mapping[category] = len(samples)
-        return np.array(samples)
+        return samples
 
 
     def get_label(self, category):
@@ -131,7 +132,12 @@ if __name__ == "__main__":
     # Concatenate all the pickles
     # concat_pickles()
 
-    save_as_pickled_object((np.array(all_samples), np.array(all_labels)), "Pickles/pickle_all.pickle")
+    sparse_samples = sparse.csr_matrix(np.array(all_samples))
+    sparse_labels = sparse.csr_matrix(np.array(all_labels))
+    pickle_all = open("Pickles/pickle_all.pickle", "wb")
+    pickle.dump((sparse_samples, sparse_labels), pickle_all, protocol=2)
+
+    # save_as_pickled_object((np.array(all_samples), np.array(all_labels)), "Pickles/pickle_all.pickle")
 
     # TESTING
     # test_sample = np.array(sc.get_samples(8))
