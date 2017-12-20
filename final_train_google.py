@@ -244,7 +244,7 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 				counter=0
 
 	model.fit_generator(generator=batch_generator(X_train, y_train, 25),
-	                    nb_epoch=nb_epoch, 
+	                   # nb_epoch=nb_epoch, 
 	                    samples_per_epoch=X_train.shape[0])
 	print (model.evaluate_generator(generator=batch_generator(X_test, y_test, 25),steps=100))
 
