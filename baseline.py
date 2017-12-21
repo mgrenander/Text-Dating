@@ -16,6 +16,7 @@ import pickle
 from sklearn.cross_validation import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from scipy.sparse import csr_matrix
+from tensorflow.python.lib.io import file_io
 
 
 # word count of text classification
@@ -77,7 +78,7 @@ def convert_to_numpy(train_file='nb.pickle', **args):
 	print clf.score(X_test,y_test)
 
 if __name__ == '__main__':
-	#train_model_seara()
+
 	parser = argparse.ArgumentParser()
 	# Input Arguments
 	parser.add_argument(

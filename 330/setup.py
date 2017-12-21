@@ -11,8 +11,6 @@ setup(name='train_for_google',
       'keras',
       'h5py',
       'sklearn',
-      'matplotlib',
-      'six',
-      'python3-tk'
+      'matplotlib'
   ],
   zip_safe=False)
