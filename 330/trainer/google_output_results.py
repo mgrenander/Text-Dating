@@ -27,6 +27,7 @@ from tensorflow.python.lib.io import file_io
 from sklearn.cross_validation import train_test_split
 from matplotlib import pyplot as plt
 
+
 '''
 trainsforming and put into dense one by one 
 '''
