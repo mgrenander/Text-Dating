@@ -65,8 +65,8 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 
 	words=400 # number of words per sample
 	num_classes=8
-	convolution_stride=4
-	region_size= 20
+	convolution_stride=20
+	region_size= 40
 	num_weights=100
 	pooling_units=10
 	pooling_size=int((int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1 )/pooling_units) +1
