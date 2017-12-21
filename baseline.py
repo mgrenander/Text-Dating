@@ -24,12 +24,12 @@ from scipy.sparse import csr_matrix
 
 
 
-def train_model_seara(train_file='pickle_all.pickle', **args):
-	# start = time.time()
-	# # Here put all the main training code in this function
-	# file_stream = file_io.FileIO(train_file, mode='r')
-	# X, y= pickle.load(file_stream)
-	# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+def train_model_seara(train_file='pickle_.pickle', **args):
+	start = time.time()
+	# Here put all the main training code in this function
+	file_stream = file_io.FileIO(train_file, mode='r')
+	X, y= pickle.load(file_stream)
+	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 	# ------------ testing input format ---------------------------
 	def correct_input_local(vocab, sentences):
@@ -47,12 +47,12 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 		return result_sentences
 
 
-	vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
-	# len_vocabulary= len(vocabulary)
-	X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
-	X= correct_input_local(vocabulary, X)
-	# num_classes=9
-	y=np.array([0,1,1,1,0]) # y has to be a list of numbers
+	# vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
+	# # len_vocabulary= len(vocabulary)
+	# X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+	# X= correct_input_local(vocabulary, X)
+	# # num_classes=9
+	# y=np.array([0,1,1,1,0]) # y has to be a list of numbers
 	# y= to_categorical(y_train, 9) # One-hot encode the labels
 
 
@@ -61,7 +61,7 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 
 	clf = MultinomialNB()
 	clf.fit(X_train, y_train)
-	print clf.score(X_test, y_test)
+
 
 
 
@@ -69,22 +69,22 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 	
 
 if __name__ == '__main__':
-	train_model_seara()
-# 	parser = argparse.ArgumentParser()
-# 	# Input Arguments
-# 	parser.add_argument(
-# 		'--train-file',
-# 		help='GCS or local paths to training data',
-# 		required=True
-# 	)
+	#train_model_seara()
+	parser = argparse.ArgumentParser()
+	# Input Arguments
+	parser.add_argument(
+		'--train-file',
+		help='GCS or local paths to training data',
+		required=True
+	)
 
-# 	parser.add_argument(
-# 	  '--job-dir',
-# 	  help='GCS location to write checkpoints and export models',
-# 	  required=True
-# 	)
-# 	args = parser.parse_args()
-# 	arguments = args.__dict__
-# 	job_dir = arguments.pop('job_dir')
+	parser.add_argument(
+	  '--job-dir',
+	  help='GCS location to write checkpoints and export models',
+	  required=True
+	)
+	args = parser.parse_args()
+	arguments = args.__dict__
+	job_dir = arguments.pop('job_dir')
 
-# 	train_model_seara(**arguments)
+	train_model_seara(**arguments)
