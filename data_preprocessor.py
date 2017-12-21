@@ -6,7 +6,6 @@ from nltk import word_tokenize
 import re
 import string
 import numpy as np
-np.set_printoptions(threshold=np.inf)
 
 texts_folder = "Texts/"
 proc_folder = "Processed/"
