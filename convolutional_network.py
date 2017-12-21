@@ -24,8 +24,12 @@ import time
 import sys
 import pickle
 import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
 
 start = time.time()
+
 # ------------ PARAMETERS TO CHANGE -------------------------
 '''
 words  : should match the number of words in a sample from preprocessing 
@@ -33,6 +37,37 @@ change "n" from your preprocessing : for actual size of vocabulary desired
 X_train , y_train     pickled from test_pickle or pickle_all decide wether it is the small test sample or the entire data run.
 '''
 # -----------------------------------------------
+def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion Matrix' ,cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print(title)
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+
+    plt.show()
 
 class ToDenseSeq(Sequence):
 
@@ -55,19 +90,19 @@ class ToDenseSeq(Sequence):
 
 # ------------------------ Matt new ---------------------------
 
-pickle_all = open("Pickles/pickle_all.pickle", 'rb')
-X_train, y_train = pickle.load(pickle_all)
-print(len(X_train))
-print(len(y_train))
+# pickle_all = open("Pickles/pickle_all.pickle", 'rb')
+# X_train, y_train = pickle.load(pickle_all)
+# print(len(X_train))
+# print(len(y_train))
 
 
-# Small test sample
-pickle_in = open("Pickles/test_pickle.pickle", 'rb')
-X_train, y_train = pickle.load(pickle_in)
-print (len(X_train))
-print (len(y_train))
-sys.exit()
-print ('------- on to my part -----------')
+# # Small test sample
+# pickle_in = open("Pickles/test_pickle.pickle", 'rb')
+# X_train, y_train = pickle.load(pickle_in)
+# print (len(X_train))
+# print (len(y_train))
+# sys.exit()
+# print ('------- on to my part -----------')
 # print(X_train)
 
 # Verify types
@@ -117,14 +152,14 @@ def calculated_convoluted_window_height(region_size,convolution_stride):
 	return nums_windows
 
 
-num_classes=9
+num_classes=2
 convolution_stride=2
 region_size=3
-num_weights=1000
-pooling_units=100
+num_weights=100
+pooling_units=10
 pooling_size=int((int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1 )/pooling_units) +1
 
-len_vocabulary=data_preprocessor.get_vocab_len()
+#len_vocabulary=data_preprocessor.get_vocab_len()
 #len_vocabulary=len(vocabulary)
 
 # Category 7
@@ -170,13 +205,15 @@ def correct_input_local(vocab, sentences):
 
 
 # X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
-# vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
-# len_vocabulary= len(vocabulary)
-# X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
+len_vocabulary= len(vocabulary)
+X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
 # X_train= correct_input_local(vocabulary, X)
 # num_classes=2
-# y_train=[0,1,1,1,0] # y has to be a list of numbers
-# y_train = to_categorical(y_train, 2) # One-hot encode the labels
+y=[0,1,1,1,0] # y has to be a list of numbers
+y= to_categorical(y, 2) # One-hot encode the labels
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
 # print (y_train)
 print ('----generated so far by seara-----')
 
@@ -281,12 +318,9 @@ print(model.summary())
 
 # ---------- all together in one go ... it works ---------------
 model.fit(x=convoluted_input1, y=y_train)
+y_pred = model.predict(convoluted_input1, batch_size=128)
 
-# ----------------- try to pass by batch -----------------------
-# seq = ToDenseSeq(convoluted_input1[:2],y_train[:2],1)
-# model.fit_generator(seq)
 
-# seq = ToDenseSeq(convoluted_input1,y_train,1) # dummy test using the training same as testing
-# print ('------------ this is the testing result!!!------------')
-# print (model.evaluate_generator(seq)) # returns [loss_function_value, accuracy]
-# print ("Time spent: {}s".format(time.time() -start))
+cnf_matrix = confusion_matrix(y_test, y_pred)
+
+

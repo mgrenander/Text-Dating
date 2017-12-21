@@ -10,7 +10,9 @@ setup(name='train_for_google',
   install_requires=[
       'keras',
       'h5py',
-      'sklearn'
-      'matplotlib'
+      'sklearn',
+      'matplotlib',
+      'six',
+      'python3-tk'
   ],
   zip_safe=False)
