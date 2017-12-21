@@ -19,6 +19,7 @@ from keras.layers import Dense
 from keras.layers import Concatenate
 from keras.models import Model
 from keras.utils import Sequence
+from tensorflow.python.lib.io import file_io
 import math
 import time
 import sys

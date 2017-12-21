@@ -62,11 +62,19 @@ def train_model_seara(train_file='pickle_.pickle', **args):
 	clf = MultinomialNB()
 	clf.fit(X_train, y_train)
 
+def convert_to_numpy(train_file='nb.pickle', **args):
+		# Here put all the main training code in this function
+
+	file_stream = file_io.FileIO(train_file, mode='r')
+	X, y= pickle.load(file_stream)
+	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+	X_train=X_train.toarray()
+	X_test=X_test.toarray()
 
 
-
-
-	
+	clf = MultinomialNB()
+	clf.fit(X_train, y_train)
+	print clf.score(X_test,y_test)
 
 if __name__ == '__main__':
 	#train_model_seara()
@@ -87,4 +95,5 @@ if __name__ == '__main__':
 	arguments = args.__dict__
 	job_dir = arguments.pop('job_dir')
 
-	train_model_seara(**arguments)
+	#train_model_seara(**arguments)
+	convert_to_numpy(**argument)
