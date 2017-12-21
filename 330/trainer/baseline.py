@@ -97,4 +97,4 @@ if __name__ == '__main__':
 	job_dir = arguments.pop('job_dir')
 
 	#train_model_seara(**arguments)
-	convert_to_numpy(**argument)
+	convert_to_numpy(**arguments)
