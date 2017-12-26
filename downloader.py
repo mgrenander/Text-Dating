@@ -42,13 +42,6 @@ def download_book(data_api, id, book_date_id):
     hathi_id, date = book_date_id.split("\t")
     hathi_id = hathi_id.replace("+=", ":/").replace("=", "/")
 
-    if date == "N/A":
-        return
-
-    if int(date) >= 1750 or int(date) < 1725:
-        print("We only want books in 1725-1750")
-        return
-
     # Find folder to save text
     folder = "Texts/"
     if date == "N/A":
@@ -85,7 +78,7 @@ def download_book(data_api, id, book_date_id):
                 ocrpage = data_api.getpageocr(hathi_id, i)
                 break
             except (HTTPError, RequestException) as e:
-                # We attempt to download the page a max of 10 times, then exit with error if we are still failing
+                # We attempt to download the page a max of 10 times, then we move on
                 # Note there are lots of issues with the HathiTrust rejecting requests after a few page downloads
                 attempts += 1
                 time.sleep(5)  # Wait a few seconds before trying again
@@ -115,8 +108,8 @@ data_api = da.DataAPI(oauth_key, oauth_secret_key)
 
 # Download the books according to Bamman et al. (2017)
 ids = open("stratified.txt").read().split("\n")[1:]
-for i in range(117, len(ids)):
-    # Some books cannot be downloaded this way
+for i in range(0, len(ids)):
+    # Some books cannot be downloaded by HathiTrust, so we just continue
     if i == 19 or i == 31 or i == 50 or i == 105:
         continue
 
