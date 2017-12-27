@@ -1,11 +1,3 @@
-'''
--NEED TO ADJUST NUMBER OF NODES/LAYER based on data input request
--NEED TO select appropriate number of classes
-
-'''
-# from keras.models import Model # basic class for specifying and training a neural network
-# from keras.layers import Input, Convolution2D, MaxPooling2D, Dense, Dropout, Activation, Flatten
-# from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
 import numpy as np
 import argparse
 from keras.utils import to_categorical
@@ -25,7 +17,6 @@ import pickle
 import tensorflow as tf
 from tensorflow.python.lib.io import file_io
 from sklearn.cross_validation import train_test_split
-from sklearn.metrics import confusion_matrix
 
 
 '''
@@ -54,24 +45,24 @@ class ToDenseSeq(Sequence):
 	def on_epoch_end(self):
 	    pass
 
-def train_model_seara(train_file='pickle_all.pickle', **args):
+def train_model(train_file='pickle_all.pickle', **args):
 	start = time.time()
 	# Here put all the main training code in this function
-	# file_stream = file_io.FileIO(train_file, mode='r')
-	# X, y= pickle.load(file_stream)
+	file_stream = file_io.FileIO(train_file, mode='r')
+	X, y= pickle.load(file_stream)
 
 
 
-	# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-	words=5 # number of words per sample
-	num_classes=2
-	region_size= 3
-	convolution_stride=2
-	num_weights=10
+	words=400 # number of words per sample
+	num_classes=8
+	region_size= 40
+	convolution_stride=4
+	num_weights=100
 	pooling_units=20
 	pooling_size=int((int(((words+(2*(region_size-1)))-region_size)/(convolution_stride))+1 )/pooling_units) +1
-	len_vocabulary=5
+	len_vocabulary=2000
 
 	nb_epoch=8
 
@@ -95,14 +86,14 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 		return result_sentences
 
 
-	vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
-	len_vocabulary= len(vocabulary)
-	X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
-	X= correct_input_local(vocabulary, X)
-	num_classes=2
-	y=[0,1,1,1,0] # y has to be a list of numbers
-	y_temp= to_categorical(y, 2) # One-hot encode the labels
-	X_train, X_test, y_train, y_test = train_test_split(X, y_temp, test_size=0.2, random_state=42)
+	# vocabulary= ['I','went','to','school','yesterday','wanted','talk','you'] # this is not actually needed, for fakes only
+	# len_vocabulary= len(vocabulary)
+	# X=['I went to school yesterday'.split(),'I love you like yesterday'.split(), 'I wanted talk to you'.split(),'to talk you school I'.split(),'school to wanted you I'.split()] # 2D array
+	# X= correct_input_local(vocabulary, X)
+	# num_classes=9
+	# y_train=[0,1,1,1,0] # y has to be a list of numbers
+	# y= to_categorical(y_train, 9) # One-hot encode the labels
+	# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
 
@@ -157,17 +148,17 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 		#print (result)
 		return result
 
-	#---------------------- CNN single -----------------------
+	# ---------------------- CNN single -----------------------
 	# convoluted_input_test=bag_of_words_conversion(X_test,region_size,convolution_stride,words,len_vocabulary,convolution_stride)
 	# convoluted_input_train=bag_of_words_conversion(X_train,region_size,convolution_stride,words,len_vocabulary,convolution_stride)
-	convoluted_window_height=X_train[0].shape[0] 
+	# convoluted_window_height=convoluted_input_train[0].shape[0] 
 
 	# print (convoluted_input1[:5])
 	# print (y_train[:5])
 	# sys.exit()
 
 	padded_matrix_size = words+2*(region_size-1)
-	# convoluted_window_height=int(math.ceil( float(padded_matrix_size-(region_size-1))/convolution_stride ))
+	convoluted_window_height=int(math.ceil( float(padded_matrix_size-(region_size-1))/convolution_stride ))
 
 
 
@@ -203,31 +194,48 @@ def train_model_seara(train_file='pickle_all.pickle', **args):
 	# print (model.evaluate_generator(seq)) # returns [loss_function_value, accuracy]
 	# print ("Time spent: {}s".format(time.time() -start))
 
+	def batch_generator(X_data, y_data, batch_size):
+		samples_per_epoch = X_data.shape[0]
+		number_of_batches = samples_per_epoch//batch_size
+		counter=0
+		index = np.arange(np.shape(y_data)[0])
+		while 1:
+			index_batch = index[batch_size*counter:batch_size*(counter+1)]
+			#tmp=[]
+			x_temp=X_data[0].toarray()
+			batch_result=np.zeros(shape=(batch_size,x_temp.shape[0],x_temp.shape[1]))
+			y_batch=np.zeros(shape=(batch_size,1,num_classes))
+			# print X_data.shape
+			# print index_batch
+			# print type(index_batch)
+			j=0
+			for i in index_batch:
+				batch_result[j]=X_data[i].toarray()
+				y_batch[j]=y_data[i].toarray()
+				j+=1
+		
 
-	# model.fit_generator(generator=batch_generator(X_train, y_train, 25),
-	#                     # nb_epoch=nb_epoch, 
-	#                     samples_per_epoch=X_train.shape[0])
-	# print (model.evaluate_generator(generator=batch_generator(X_test, y_test, 25),steps=100))
-	model.fit(X_train,y_train)
-	a=model.predict(X_train)
-	print a
-	a=np.array(a.argmax(axis=1))
-	
-	# then store the a 
+			# X_batch = np.array(X_data[index_batch,:].todense())
+			# print batch_result
+			# print batch_result.shape
+			# print type(batch_result)
+			X_batch=bag_of_words_conversion(batch_result,region_size,convolution_stride,words,len_vocabulary,convolution_stride)
 
-	y=[0,1,1,1]
-	print a
-	print y_train
+			if y_batch.shape[0] != X_batch.shape[0]:
+				print X_batch
+				print y_batch
+				sys.exit()
+			counter += 1
+			#yield X_batch,y_batch
+			# print X_batch.shape
+			# print y_batch.shape
+			y_batch=y_batch.reshape((batch_size, num_classes))
+			# print y_batch.shape
+			yield X_batch,np.array(y_batch)
+			if (counter > number_of_batches):
+				counter=0
 
-	conf_matrix=confusion_matrix(y, a)
-
-	print conf_matrix
-
-if __name__ == '__main__':
-	# train_model_seara()
-	a=np.array([1,2,3,4])
-	# np.savetxt('test.out',a)
-	b= np.loadtxt('test.out')
-	print a
-	print b
-
+	model.fit_generator(generator=batch_generator(X_train, y_train, 25),
+	                    # nb_epoch=nb_epoch, 
+	                    samples_per_epoch=X_train.shape[0])
+	print (model.evaluate_generator(generator=batch_generator(X_test, y_test, 25),steps=100))
