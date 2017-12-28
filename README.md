@@ -28,7 +28,7 @@ Lastly, run the sample creator: ```sample_creator.py```. This script will tranfo
 
 Alternatively, run the ```naive_bayes_preprocessor.py``` file to transform the data into a readable format for the Naive Bayes baseline we have implemented.
 
-After running, both the ```sample_creator.py``` and ```naive_bayes_preprocessor.py``` scripts will output pickle files containing the data required for the models. These will need to be placed in the appropriate folders as specified below.
+After running, both the ```sample_creator.py``` and ```naive_bayes_preprocessor.py``` scripts will output pickle files containing the data required for the models.
 
 ## Baseline and Convolutional Neural Network
 
