@@ -30,6 +30,6 @@ Alternatively, run the ```naive_bayes_preprocessor.py``` file to transform the d
 
 After running, both the ```sample_creator.py``` and ```naive_bayes_preprocessor.py``` scripts will output pickle files containing the data required for the models. These will need to be placed in the appropriate folders as specified below.
 
-## Naive Bayes Baseline
+## Baseline and Convolutional Neural Network
 
-## Convolutional Network on Google Cloud
+See the ```google_train_folder``` for details
