@@ -32,4 +32,4 @@ After running, both the ```sample_creator.py``` and ```naive_bayes_preprocessor.
 
 ## Baseline and Convolutional Neural Network
 
-See the ```google_train_folder``` for details
+See the ```google_train_folder``` for details.
